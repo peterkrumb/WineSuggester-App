@@ -1,35 +1,32 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import styles from "./App.module.css";
+import GlassWine from "./assets/Glass-Wine.jpeg";
+
+import { useState } from "react";
 
 function App() {
-  const [count, setCount] = useState(0)
-
+  //  use the useState hook to define a state variable called queryDescription and a corresponding setter function called setQueryDescription. Initial value is an empty string
+  const [queryDescription, setQueryDescription] = useState("");
+  const onSubmit = (e) => {
+    e.preventDefault();
+    console.log(queryDescription);
+  };
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <main className={styles.main}>
+      <img src={GlassWine} alt="" className={styles.icon} />
+      <h3>World's most sophisticated wine assistant</h3>
+
+      <form onSubmit={onSubmit}>
+        <input
+          type="text"
+          name="query-description"
+          placeholder="describe your query"
+          //when the user types something in the input field, this code captures that value and updates the queryDescription variable to store it. The updated value can then be used in the component to display or process the user's input in some way. The value of the input field is set to the current value of queryDescription, and when the user types something, the onChange event handler is triggered, which calls the setQueryDescription function to update the value of queryDescription to the new value of the input field. This is how the value of the input field is stored in the component's state.
+          onChange={(e) => setQueryDescription(e.target.value)}
+        />
+        <input type="submit" value="generate query" />
+      </form>
+    </main>
+  );
 }
 
-export default App
+export default App;
