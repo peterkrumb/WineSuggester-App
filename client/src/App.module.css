@@ -66,3 +66,30 @@
   font-weight: bold;
   margin-top: 40px;
 }
+.main .button {
+  display: inline-block;
+  font-size: 1em;
+  padding: 10px 20px;
+  margin: 10px 2px;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  outline: none;
+  color: #fff;
+  background-color: #800020; /* Burgundy color */
+  border: none;
+  border-radius: 15px;
+  box-shadow: 0 9px #999;
+  transition: all 0.3s cubic-bezier(0.64, 0.09, 0.08, 1);
+  font-family: "Georgia", serif;
+}
+
+.button:hover {
+  background-color: #660015;
+} /* Darker burgundy color */
+
+.button:active {
+  background-color: #660015;
+  box-shadow: 0 5px #666;
+  transform: translateY(4px);
+}
