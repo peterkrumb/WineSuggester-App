@@ -1,0 +1,38 @@
+name: My Deployment Workflow
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: "14" # Use the appropriate Node.js version
+
+      - name: Set up client environment variables
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }} # Access the secret using 'secrets.OPENAI_API_KEY'
+        run: |
+          cd client
+          echo "VITE_OPENAI_API_KEY=${OPENAI_API_KEY}" >> .env
+
+      - name: Install dependencies and build client
+        working-directory: ./client
+        run: |
+          npm install
+          npm run start:client
+
+      - name: Install server dependencies and start server
+        working-directory: ./server
+        run: |
+          npm install
+          npm start
