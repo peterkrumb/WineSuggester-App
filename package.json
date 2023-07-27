@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "scripts": {
     "start:server": "cd server && node index.js",
-    "start:client": "cd client && npm run build",
+    "start:client": "cd client && npx vite build",
     "start": "concurrently \"npm run start:server\" \"npm run start:client\""
   },
   "dependencies": {
