@@ -41,9 +41,55 @@ const WineForm = () => {
       console.log("Raw Response: ", response.data.response); // Let's log raw response
       const responseSentences = response.data.response.split("\n");
       console.log("Response Sentences: ", responseSentences); // Let's log the split response
-      const wineRecommendations = responseSentences
-        .filter((sentence) => sentence.match(/^\d/))
-        .map((sentence) => sentence.trim() + ".");
+
+      let wineRecommendations = [];
+      for (let i = 0; i < responseSentences.length; i++) {
+        const sentence = responseSentences[i];
+
+        if (
+          sentence.startsWith("1.") ||
+          sentence.startsWith("2.") ||
+          sentence.startsWith("3.")
+        ) {
+          wineRecommendations.push(sentence);
+        }
+      }
+
+      const extractWines = (text) => {
+        // Split the text into lines
+        const lines = text.split("\n");
+
+        // Initialize an empty array to hold our wines
+        const wines = [];
+
+        // Initialize an empty string to hold the current wine
+        let currentWine = "";
+
+        // For each line in our lines
+        for (let line of lines) {
+          // If the line is blank, this signifies the end of a wine
+          if (line.trim() === "") {
+            // If we have a current wine, push it to the array
+            if (currentWine !== "") {
+              wines.push(currentWine);
+              currentWine = "";
+            }
+          } else {
+            // If the line isn't blank, it's part of a wine
+            // If we have a current wine, add a space and then the line
+            // If we don't have a current wine, start a new one
+            currentWine = currentWine === "" ? line : `${currentWine} ${line}`;
+          }
+        }
+
+        // If we have a current wine at the end, push it to the array
+        if (currentWine !== "") {
+          wines.push(currentWine);
+        }
+
+        return wines;
+      };
+
       console.log("Wine Recommendations: ", wineRecommendations); // Let's log the filtered recommendations
       setGeneratedSentence(wineRecommendations);
     } catch (error) {
