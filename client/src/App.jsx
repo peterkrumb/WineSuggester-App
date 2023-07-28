@@ -35,30 +35,13 @@ const WineForm = () => {
     event.preventDefault();
     const prompt = `${wineVarietal}`;
     try {
-      const response = await axios
-        .post("http://localhost:8000/generate", {
+      const response = await axios.post(
+        "https://64c34606c33bb03a757b2706--lively-rugelach-3e0149.netlify.app/generate",
+        {
           queryDescription: prompt,
-        })
-        .then((response) => {
-          console.log(response);
-        })
-        .catch((error) => {
-          console.error("Error:", error);
-          if (error.response) {
-            // The request was made and the server responded with a status code
-            // that falls out of the range of 2xx
-            console.log("Response data:", error.response.data);
-            console.log("Response status:", error.response.status);
-            console.log("Response headers:", error.response.headers);
-          } else if (error.request) {
-            // The request was made but no response was received
-            // `error.request` is an instance of XMLHttpRequest in the browser
-            console.log("Request:", error.request);
-          } else {
-            // Something happened in setting up the request that triggered an Error
-            console.log("Error message:", error.message);
-          }
-        });
+        }
+      );
+
       console.log("Raw Response: ", response.data.response); // Let's log raw response
       const responseSentences = response.data.response.split("\n");
       console.log("Response Sentences: ", responseSentences); // Let's log the split response
@@ -114,7 +97,21 @@ const WineForm = () => {
       console.log("Wine Recommendations: ", wineRecommendations); // Let's log the filtered recommendations
       setGeneratedSentence(wineRecommendations);
     } catch (error) {
-      console.error("Failed to generate response", error.response.error);
+      console.error("Error:", error);
+      if (error.response) {
+        // The request was made and the server responded with a status code
+        // that falls out of the range of 2xx
+        console.log("Response data:", error.response.data);
+        console.log("Response status:", error.response.status);
+        console.log("Response headers:", error.response.headers);
+      } else if (error.request) {
+        // The request was made but no response was received
+        // `error.request` is an instance of XMLHttpRequest in the browser
+        console.log("Request:", error.request);
+      } else {
+        // Something happened in setting up the request that triggered an Error
+        console.log("Error message:", error.message);
+      }
     }
   };
 
