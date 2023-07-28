@@ -4,8 +4,21 @@ import generate from "./generate.js";
 
 const app = express();
 
+var corsOptions = {
+  origin: "http://localhost:8000",
+  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+  allowedHeaders: [
+    "Origin",
+    "X-Api-Key",
+    "X-Requested-With",
+    "Content-Type",
+    "Accept",
+    "Authorization",
+  ],
+};
+
 app.use(express.json());
-app.use(cors());
+app.use(cors(corsOptions));
 
 const port = process.env.PORT || 8000;
 

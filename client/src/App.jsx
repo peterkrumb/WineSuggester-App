@@ -93,7 +93,7 @@ const WineForm = () => {
       console.log("Wine Recommendations: ", wineRecommendations); // Let's log the filtered recommendations
       setGeneratedSentence(wineRecommendations);
     } catch (error) {
-      console.error("Failed to generate response", error);
+      console.error("Failed to generate response", error.response.error);
     }
   };
 
