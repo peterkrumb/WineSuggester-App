@@ -4,8 +4,13 @@ import generate from "./generate.js";
 
 const app = express();
 
-const allowedOrigins = ["http://localhost:5173"];
-
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://localhost:4173",
+  "https://64c3f716a5096d1d56f67a47--lively-rugelach-3e0149.netlify.app",
+  "https://lively-rugelach-3e0149.netlify.app",
+];
+cd;
 const corsOptions = {
   origin: function (origin, callback) {
     if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
@@ -17,6 +22,11 @@ const corsOptions = {
 };
 
 app.use(express.json());
+
+// This line will ensure that all OPTIONS requests have CORS headers
+app.options("*", cors(corsOptions));
+
+// Use cors middleware for your other routes
 app.use(cors(corsOptions));
 
 const port = process.env.PORT || 8000;
