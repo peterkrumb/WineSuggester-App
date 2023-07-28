@@ -4,15 +4,11 @@ import generate from "./generate.js";
 
 const app = express();
 
-const whitelist = [
-  "http://localhost:8000",
-  "https://64c369f37b3da14f853bf8e8--lively-rugelach-3e0149.netlify.app",
-  "https://lively-rugelach-3e0149.netlify.app/",
-]; // Add as many urls as you need
+const allowedOrigins = ["http://localhost:4173"];
+
 const corsOptions = {
   origin: function (origin, callback) {
-    if (whitelist.indexOf(origin) !== -1 || !origin) {
-      // The || !origin is so that your server will allow requests from localhost
+    if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
       callback(null, true);
     } else {
       callback(new Error("Not allowed by CORS"));

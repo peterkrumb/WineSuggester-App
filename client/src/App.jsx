@@ -34,6 +34,11 @@ const WineForm = () => {
   const onSubmit = async (event) => {
     event.preventDefault();
     const prompt = `${wineVarietal}`;
+    const url = "https://dry-sea-76064-c9baeed38795.herokuapp.com/generate";
+    const headers = {
+      "Content-Type": "application/json", // Specify the content type as JSON
+      // Add any other custom headers here, if needed
+    };
     try {
       const response = await axios.post(
         "https://dry-sea-76064-c9baeed38795.herokuapp.com/generate",
