@@ -36,7 +36,7 @@ const WineForm = () => {
     const prompt = `${wineVarietal}`;
     try {
       const response = await axios.post(
-        "https://lively-rugelach-3e0149.netlify.app/generate",
+        "https://dry-sea-76064-c9baeed38795.herokuapp.com/generate",
         {
           queryDescription: prompt,
         }
