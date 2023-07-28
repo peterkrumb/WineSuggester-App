@@ -10,7 +10,7 @@ const allowedOrigins = [
   "https://64c3f716a5096d1d56f67a47--lively-rugelach-3e0149.netlify.app",
   "https://lively-rugelach-3e0149.netlify.app",
 ];
-cd;
+
 const corsOptions = {
   origin: function (origin, callback) {
     if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
