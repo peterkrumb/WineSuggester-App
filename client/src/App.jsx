@@ -40,81 +40,47 @@ const WineForm = () => {
       // Add any other custom headers here, if needed
     };
     try {
-      const response = await axios.post(
-        "https://dry-sea-76064-c9baeed38795.herokuapp.com/generate",
-        {
-          queryDescription: prompt,
-        }
-      );
+      const response = await axios.post(url, { queryDescription: prompt });
 
       console.log("Raw Response: ", response.data.response); // Let's log raw response
+
       const responseSentences = response.data.response.split("\n");
-      console.log("Response Sentences: ", responseSentences); // Let's log the split response
 
-      let wineRecommendations = [];
+      let wineObjects = [];
+      let currentWine = {};
+
       for (let i = 0; i < responseSentences.length; i++) {
-        const sentence = responseSentences[i];
-
-        if (
-          sentence.startsWith("1.") ||
-          sentence.startsWith("2.") ||
-          sentence.startsWith("3.")
-        ) {
-          wineRecommendations.push(sentence);
+        const sentence = responseSentences[i].trim();
+        if (sentence.startsWith("Wine Name:")) {
+          if (currentWine.name) {
+            wineObjects.push(currentWine);
+            currentWine = {};
+          }
+          currentWine.name = sentence.split(": ")[1];
+        } else if (sentence.startsWith("Region:")) {
+          currentWine.region = sentence.split(": ")[1];
+        } else if (sentence.startsWith("Price:")) {
+          currentWine.price = sentence.split(": ")[1];
+        } else if (sentence.startsWith("Description:")) {
+          currentWine.description = sentence.split(": ")[1];
         }
       }
 
-      const extractWines = (text) => {
-        // Split the text into lines
-        const lines = text.split("\n");
+      if (currentWine.name) {
+        wineObjects.push(currentWine);
+      }
 
-        // Initialize an empty array to hold our wines
-        const wines = [];
-
-        // Initialize an empty string to hold the current wine
-        let currentWine = "";
-
-        // For each line in our lines
-        for (let line of lines) {
-          // If the line is blank, this signifies the end of a wine
-          if (line.trim() === "") {
-            // If we have a current wine, push it to the array
-            if (currentWine !== "") {
-              wines.push(currentWine);
-              currentWine = "";
-            }
-          } else {
-            // If the line isn't blank, it's part of a wine
-            // If we have a current wine, add a space and then the line
-            // If we don't have a current wine, start a new one
-            currentWine = currentWine === "" ? line : `${currentWine} ${line}`;
-          }
-        }
-
-        // If we have a current wine at the end, push it to the array
-        if (currentWine !== "") {
-          wines.push(currentWine);
-        }
-
-        return wines;
-      };
-
-      console.log("Wine Recommendations: ", wineRecommendations); // Let's log the filtered recommendations
-      setGeneratedSentence(wineRecommendations);
+      console.log("Wine Recommendations: ", wineObjects); // Let's log the wine objects
+      setGeneratedSentence(wineObjects);
     } catch (error) {
       console.error("Error:", error);
       if (error.response) {
-        // The request was made and the server responded with a status code
-        // that falls out of the range of 2xx
         console.log("Response data:", error.response.data);
         console.log("Response status:", error.response.status);
         console.log("Response headers:", error.response.headers);
       } else if (error.request) {
-        // The request was made but no response was received
-        // `error.request` is an instance of XMLHttpRequest in the browser
         console.log("Request:", error.request);
       } else {
-        // Something happened in setting up the request that triggered an Error
         console.log("Error message:", error.message);
       }
     }
@@ -166,8 +132,19 @@ const WineForm = () => {
         Get Wine Recommendation
       </button>
       <p>{generateSuggestion()}</p>
-      {generatedSentence.map((sentence, index) => (
-        <h3 key={index}>{sentence}</h3>
+      {generatedSentence.map((wine, index) => (
+        <div key={index} style={{ marginBottom: "20px" }}>
+          <h3>{wine.name}</h3>
+          <p>
+            <strong>Region:</strong> {wine.region}
+          </p>
+          <p>
+            <strong>Price:</strong> {wine.price}
+          </p>
+          <p>
+            <strong>Description:</strong> {wine.description}
+          </p>
+        </div>
       ))}
     </main>
   );
