@@ -5,7 +5,7 @@ import generate from "./generate.js";
 const app = express();
 
 const whitelist = [
-  "http://localhost:3000",
+  "http://localhost:8000",
   "https://64c369f37b3da14f853bf8e8--lively-rugelach-3e0149.netlify.app",
   "https://lively-rugelach-3e0149.netlify.app/",
 ]; // Add as many urls as you need
@@ -21,7 +21,7 @@ const corsOptions = {
 };
 
 app.use(express.json());
-app.use(cors());
+app.use(cors(corsOptions));
 
 const port = process.env.PORT || 8000;
 
