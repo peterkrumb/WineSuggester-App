@@ -5,7 +5,8 @@ import generate from "./generate.js";
 const app = express();
 
 var corsOptions = {
-  origin: "http://localhost:8000",
+  origin:
+    "https://64c33d3c7b3da138f43bf98e--lively-rugelach-3e0149.netlify.app",
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
   allowedHeaders: [
     "Origin",
