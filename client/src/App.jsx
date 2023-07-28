@@ -4,7 +4,7 @@ import Select from "react-select";
 import axios from "axios";
 import { redVarietals, whiteVarietals } from "./varietals";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const WineForm = () => {
   const [wineType, setWineType] = useState(null);
@@ -13,8 +13,29 @@ const WineForm = () => {
   const [question, setQuestion] = useState("");
   const [answer, setAnswer] = useState("");
   const [generatedSentence, setGeneratedSentence] = useState([]); // Define the state to hold the generated sentence
+  const [loadingMessage, setLoadingMessage] = useState(""); // Define the state to hold the loading message while the API call is being made
   // const [wineName, setWineName] = useState("");
   // const [vintage, setVintage] = useState("");
+
+  useEffect(() => {
+    if (loadingMessage === "") {
+      return;
+    }
+
+    const timerId = setInterval(() => {
+      setLoadingMessage((prevMessage) => {
+        const dotCount = (prevMessage.match(/\./g) || []).length;
+        if (dotCount < 3) {
+          return prevMessage + ".";
+        } else {
+          return "Wine Companion is thinking.";
+        }
+      });
+    }, 500); // Update every half-second
+
+    // Clean up the timer when the component is unmounted, or when loadingMessage changes
+    return () => clearInterval(timerId);
+  }, [loadingMessage]);
 
   const wineTypeOptions = [
     { value: "red", label: "Red" },
@@ -36,13 +57,14 @@ const WineForm = () => {
     const prompt = `${wineVarietal}`;
     const url = "https://dry-sea-76064-c9baeed38795.herokuapp.com/generate";
     const headers = {
-      "Content-Type": "application/json", // Specify the content type as JSON
-      // Add any other custom headers here, if needed
+      "Content-Type": "application/json",
     };
+    setLoadingMessage("Wine Companion is thinking");
+
     try {
       const response = await axios.post(url, { queryDescription: prompt });
 
-      console.log("Raw Response: ", response.data.response); // Let's log raw response
+      console.log("Raw Response: ", response.data.response);
 
       const responseSentences = response.data.response.split("\n");
 
@@ -51,18 +73,23 @@ const WineForm = () => {
 
       for (let i = 0; i < responseSentences.length; i++) {
         const sentence = responseSentences[i].trim();
-        if (sentence.startsWith("Wine Name:")) {
+
+        if (sentence.startsWith("Wine Recommendation")) {
           if (currentWine.name) {
             wineObjects.push(currentWine);
             currentWine = {};
           }
           currentWine.name = sentence.split(": ")[1];
-        } else if (sentence.startsWith("Region:")) {
-          currentWine.region = sentence.split(": ")[1];
-        } else if (sentence.startsWith("Price:")) {
-          currentWine.price = sentence.split(": ")[1];
-        } else if (sentence.startsWith("Description:")) {
+        } else if (sentence.startsWith("Description")) {
           currentWine.description = sentence.split(": ")[1];
+        } else if (sentence.startsWith("Price")) {
+          currentWine.price = sentence.split(": ")[1];
+        } else if (sentence.startsWith("Link")) {
+          currentWine.link = sentence.split(": ")[1];
+        } else if (sentence.startsWith("Image")) {
+          currentWine.image = sentence.split(": ")[1];
+        } else if (sentence.startsWith("Reason")) {
+          currentWine.reason = sentence.split(": ")[1];
         }
       }
 
@@ -70,19 +97,12 @@ const WineForm = () => {
         wineObjects.push(currentWine);
       }
 
-      console.log("Wine Recommendations: ", wineObjects); // Let's log the wine objects
+      console.log("Wine Recommendations: ", wineObjects);
       setGeneratedSentence(wineObjects);
+      setLoadingMessage("");
     } catch (error) {
       console.error("Error:", error);
-      if (error.response) {
-        console.log("Response data:", error.response.data);
-        console.log("Response status:", error.response.status);
-        console.log("Response headers:", error.response.headers);
-      } else if (error.request) {
-        console.log("Request:", error.request);
-      } else {
-        console.log("Error message:", error.message);
-      }
+      setLoadingMessage("");
     }
   };
 
@@ -132,18 +152,22 @@ const WineForm = () => {
         Get Wine Recommendation
       </button>
       <p>{generateSuggestion()}</p>
+      <p>{loadingMessage}</p>
       {generatedSentence.map((wine, index) => (
         <div key={index} style={{ marginBottom: "20px" }}>
           <h3>{wine.name}</h3>
-          <p>
-            <strong>Region:</strong> {wine.region}
-          </p>
+
           <p>
             <strong>Price:</strong> {wine.price}
           </p>
           <p>
             <strong>Description:</strong> {wine.description}
           </p>
+          <p>
+            <strong>Reason:</strong> {wine.reason}
+          </p>
+          <a href={wine.link}>Buy Now</a>
+          {wine.image && <img src={wine.image} alt={wine.name} />}
         </div>
       ))}
     </main>

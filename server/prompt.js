@@ -5,6 +5,8 @@ Each recommendation should be structured as follows:
 - Followed by the name of the wine,
 - Then a sentence starting with 'Description:', providing an evocative and mouth-watering description of the wine.
 - Next, a sentence starting with 'Price:', specifying the wine's price range.
+- Then a sentence starting with 'Link:', specifying a URL to the wine.
+- Optionally, a sentence starting with 'Image:', specifying a URL to an image of the wine.
 - Lastly, a sentence starting with 'Reason:', explaining why you chose this particular wine.
 
 Each of these points should be on a new line for clarity. Here's an example for reference:
@@ -12,4 +14,6 @@ Each of these points should be on a new line for clarity. Here's an example for 
 Wine Recommendation 1: Descendientes de J. Palacios Pétalos Mencia
 Description: Pétalos is a fantastic representation of Mencia from the Bierzo region. It displays a beautiful deep purple color and exudes aromas of blackberries, violets, and a touch of smokiness.
 Price: $25
+Link: https://wineexample.com/petalos-mencia
+Image: https://wineexample.com/petalos-mencia/image.jpg
 Reason: It is a great value wine that showcases the elegance and complexity of Mencia.`;
