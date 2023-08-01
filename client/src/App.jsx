@@ -28,7 +28,7 @@ const WineForm = () => {
         if (dotCount < 3) {
           return prevMessage + ".";
         } else {
-          return "Wine Companion is thinking.";
+          return "Wine Companion is thinking. (This may take up to 30 seconds)";
         }
       });
     }, 500); // Update every half-second
@@ -66,16 +66,17 @@ const WineForm = () => {
 
       console.log("Raw Response: ", response.data.response);
 
-      const responseSentences = response.data.response.split("\n");
+      const responseSentences = response.data.response.split("\n"); // Split the response into sentences based on the newline character
 
       let wineObjects = [];
       let currentWine = {};
 
       for (let i = 0; i < responseSentences.length; i++) {
-        const sentence = responseSentences[i].trim();
+        const sentence = responseSentences[i].trim(); // Remove leading and trailing whitespace
 
         if (sentence.startsWith("Wine Recommendation")) {
           if (currentWine.name) {
+            // If there is already a wine name, push the current wine object to the array and reset the current wine object to an empty object
             wineObjects.push(currentWine);
             currentWine = {};
           }
@@ -166,8 +167,8 @@ const WineForm = () => {
           <p>
             <strong>Reason:</strong> {wine.reason}
           </p>
-          <a href={wine.link}>Buy Now</a>
-          {wine.image && <img src={wine.image} alt={wine.name} />}
+          {/* <a href={wine.link}>Buy Now</a>
+          {wine.image && <img src={wine.image} alt={wine.name} />} */}
         </div>
       ))}
     </main>
