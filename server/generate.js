@@ -4,7 +4,7 @@ import { prompt } from "./prompt.js";
 const generate = async (queryDescription) => {
   console.log("Prompt sent to OpenAI API:", queryDescription);
   const response = await openai.createChatCompletion({
-    model: "gpt-4",
+    model: "gpt-3.5-turbo",
     messages: [
       {
         role: "system",
