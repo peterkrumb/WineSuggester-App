@@ -10,10 +10,12 @@ const WineForm = () => {
   const [wineType, setWineType] = useState(null);
   const [wineVarietal, setWineVarietal] = useState(null);
   const [varietals, setVarietals] = useState([]);
+  const [spumanteVarietals, setSpumanteVarietals] = useState([]);
   const [question, setQuestion] = useState("");
   const [answer, setAnswer] = useState("");
   const [generatedSentence, setGeneratedSentence] = useState([]); // Define the state to hold the generated sentence
   const [loadingMessage, setLoadingMessage] = useState(""); // Define the state to hold the loading message while the API call is being made
+
   // const [wineName, setWineName] = useState("");
   // const [vintage, setVintage] = useState("");
 
@@ -23,15 +25,17 @@ const WineForm = () => {
     }
 
     const timerId = setInterval(() => {
+      //
       setLoadingMessage((prevMessage) => {
+        //
         const dotCount = (prevMessage.match(/\./g) || []).length;
         if (dotCount < 3) {
           return prevMessage + ".";
         } else {
-          return "Wine Companion is thinking. (This may take up to 30 seconds)";
+          return "Wine Companion is thinking (This may take up to 30 seconds).";
         }
       });
-    }, 500); // Update every half-second
+    }, 250); // Update every quarter-second
 
     // Clean up the timer when the component is unmounted, or when loadingMessage changes
     return () => clearInterval(timerId);
@@ -40,14 +44,17 @@ const WineForm = () => {
   const wineTypeOptions = [
     { value: "red", label: "Red" },
     { value: "white", label: "White" },
+    { value: "spumante", label: "Spumante (Sparkling)" },
   ];
 
   const handleWineTypeChange = (selectedOption) => {
     setWineType(selectedOption.value);
     if (selectedOption.value === "red") {
       setVarietals(redVarietals);
-    } else {
+    } else if (selectedOption.value === "white") {
       setVarietals(whiteVarietals);
+    } else if (selectedOption.value === "spumante") {
+      setVarietals(sparklingVarietals);
     }
     setWineVarietal(null); // Reset the selected varietal when wine type changes
   };
@@ -56,10 +63,7 @@ const WineForm = () => {
     event.preventDefault();
     const prompt = `${wineVarietal}`;
     const url = "https://dry-sea-76064-c9baeed38795.herokuapp.com/generate";
-    const headers = {
-      "Content-Type": "application/json",
-    };
-    setLoadingMessage("Wine Companion is thinking");
+    setLoadingMessage();
 
     try {
       const response = await axios.post(url, { queryDescription: prompt });
@@ -75,20 +79,17 @@ const WineForm = () => {
         const sentence = responseSentences[i].trim(); // Remove leading and trailing whitespace
 
         if (sentence.startsWith("Wine Recommendation")) {
+          //
           if (currentWine.name) {
             // If there is already a wine name, push the current wine object to the array and reset the current wine object to an empty object
             wineObjects.push(currentWine);
             currentWine = {};
           }
-          currentWine.name = sentence.split(": ")[1];
+          currentWine.name = sentence.split(": ")[1]; // get rid of the colon and set the second part (the wine name) as the value for the name property of the current wine
         } else if (sentence.startsWith("Description")) {
           currentWine.description = sentence.split(": ")[1];
         } else if (sentence.startsWith("Price")) {
           currentWine.price = sentence.split(": ")[1];
-        } else if (sentence.startsWith("Link")) {
-          currentWine.link = sentence.split(": ")[1];
-        } else if (sentence.startsWith("Image")) {
-          currentWine.image = sentence.split(": ")[1];
         } else if (sentence.startsWith("Reason")) {
           currentWine.reason = sentence.split(": ")[1];
         }
@@ -167,8 +168,6 @@ const WineForm = () => {
           <p>
             <strong>Reason:</strong> {wine.reason}
           </p>
-          {/* <a href={wine.link}>Buy Now</a>
-          {wine.image && <img src={wine.image} alt={wine.name} />} */}
         </div>
       ))}
     </main>
