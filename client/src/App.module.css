@@ -93,3 +93,22 @@
   box-shadow: 0 5px #666;
   transform: translateY(4px);
 }
+
+.custom-slider .e-slider-container {
+  /* Custom styles for the slider container */
+}
+
+.custom-slider .e-slider-track {
+  /* Custom styles for the slider track */
+}
+
+.custom-slider .e-slider-handle {
+  /* Custom styles for the slider handle */
+}
+
+.advancedLabel {
+  align-items: center;
+  justify-content: center;
+  background-color: #10a37f;
+  color: #800020;
+}

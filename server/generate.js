@@ -15,7 +15,7 @@ const generate = async (queryDescription) => {
         content: queryDescription,
       },
     ],
-    max_tokens: 1000,
+    // max_tokens: 1000,
     temperature: 0.7,
   });
   console.log(response.data.choices[0].message.content);

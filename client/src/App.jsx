@@ -2,22 +2,32 @@ import styles from "./App.module.css";
 import GlassWine from "./assets/Glass-Wine.jpeg";
 import Select from "react-select";
 import axios from "axios";
-import { redVarietals, whiteVarietals } from "./varietals";
-
+import { redVarietals, whiteVarietals, sparklingVarietals } from "./varietals";
 import { useState, useEffect } from "react";
+import "@fontsource/roboto/300.css";
+import "@fontsource/roboto/400.css";
+import "@fontsource/roboto/500.css";
+import "@fontsource/roboto/700.css";
+import Checkbox from "@mui/material/Checkbox";
+import { Slider, Typography } from "@material-ui/core";
 
 const WineForm = () => {
   const [wineType, setWineType] = useState(null);
   const [wineVarietal, setWineVarietal] = useState(null);
   const [varietals, setVarietals] = useState([]);
-  const [spumanteVarietals, setSpumanteVarietals] = useState([]);
-  const [question, setQuestion] = useState("");
-  const [answer, setAnswer] = useState("");
   const [generatedSentence, setGeneratedSentence] = useState([]); // Define the state to hold the generated sentence
   const [loadingMessage, setLoadingMessage] = useState(""); // Define the state to hold the loading message while the API call is being made
-
-  // const [wineName, setWineName] = useState("");
-  // const [vintage, setVintage] = useState("");
+  const [showAdvancedOptions, setShowAdvancedOptions] = useState(false);
+  const levels = [
+    "light",
+    "light-to-medium",
+    "medium",
+    "medium-to-full",
+    "full",
+  ];
+  const sweetnessLevels = ["dry", "semi-sweet", "sweet", "dessert"];
+  const [value, setValue] = useState(2);
+  const [sweetnessValue, setSweetnessValue] = useState(2);
 
   useEffect(() => {
     if (loadingMessage === "") {
@@ -27,7 +37,9 @@ const WineForm = () => {
     const timerId = setInterval(() => {
       //
       setLoadingMessage((prevMessage) => {
-        //
+        if (!prevMessage)
+          return "Wine Companion is thinking (This may take up to 30 seconds).";
+
         const dotCount = (prevMessage.match(/\./g) || []).length;
         if (dotCount < 3) {
           return prevMessage + ".";
@@ -57,6 +69,13 @@ const WineForm = () => {
       setVarietals(sparklingVarietals);
     }
     setWineVarietal(null); // Reset the selected varietal when wine type changes
+  };
+
+  // create a handleAdvancedOptionsChange function which console logs that you selected advanced options
+  const handleAdvancedOptionsChange = (e) => {
+    console.log(e);
+    setShowAdvancedOptions(!showAdvancedOptions);
+    //if show advanced options is selected, we show the other 3 options
   };
 
   const onSubmit = async (event) => {
@@ -104,8 +123,18 @@ const WineForm = () => {
       setLoadingMessage("");
     } catch (error) {
       console.error("Error:", error);
-      setLoadingMessage("");
+      setLoadingMessage(
+        "Wine Assistant is Thinking (This may take up to 30 seconds)."
+      );
     }
+  };
+
+  const handleChange = (e, newValue) => {
+    setValue(newValue);
+  };
+
+  const handleSweetnessChange = (e, newSweetnessValue) => {
+    setSweetnessValue(newSweetnessValue);
   };
 
   const generateSuggestion = () => {
@@ -150,6 +179,51 @@ const WineForm = () => {
           }))}
         />
       </form>
+      {/* here we add a checkbox for advanced options */}
+      <div className={styles.checkbox}>
+        <Checkbox onChange={handleAdvancedOptionsChange} />
+
+        <label htmlFor="advancedOptions">
+          <span className={styles.checkboxLabel}>Advanced Options</span>
+        </label>
+        {showAdvancedOptions && (
+          <div className={styles.advancedOptionsContainer}>
+            <div>
+              <Typography>Body</Typography>
+            </div>
+            <Slider
+              defaultValue={2}
+              aria-labelledby="discrete-slider"
+              size="large"
+              step={1}
+              marks
+              min={0}
+              max={4}
+              value={value}
+              onChange={handleChange}
+              valueLabelFormat={(val) => levels[val]}
+            />
+            <div>{levels[value]}</div>
+            <div>
+              <p className="advancedLabel">Sweetness</p>
+            </div>
+            <Slider
+              defaultValue={2}
+              aria-labelledby="discrete-slider"
+              size="large"
+              step={1}
+              marks
+              min={0}
+              max={3}
+              value={sweetnessValue}
+              onChange={handleSweetnessChange}
+              valueLabelFormat={(val) => sweetnessLevels[val]}
+            />
+            <div>{sweetnessLevels[sweetnessValue]}</div>
+          </div>
+        )}
+      </div>
+
       <button className={styles.button} type="button" onClick={onSubmit}>
         Get Wine Recommendation
       </button>
