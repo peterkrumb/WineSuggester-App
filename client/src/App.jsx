@@ -8,8 +8,13 @@ import "@fontsource/roboto/300.css";
 import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
+
 import Checkbox from "@mui/material/Checkbox";
-import { Slider, Typography } from "@material-ui/core";
+import Slider from "@mui/material/Slider";
+// import { Slider, Typography } from "@material-ui/core";
+import Card from "@mui/material/Card";
+import Typography from "@mui/material/Typography";
+import CardContent from "@mui/material/CardContent";
 
 const WineForm = () => {
   const [wineType, setWineType] = useState(null);
@@ -80,7 +85,10 @@ const WineForm = () => {
 
   const onSubmit = async (event) => {
     event.preventDefault();
-    const prompt = `${wineVarietal}`;
+    let prompt = `${wineVarietal}`;
+    if (showAdvancedOptions) {
+      prompt += ` with a body of ${levels[value]} and a sweetness level of ${sweetnessLevels[sweetnessValue]}`;
+    }
     const url = "https://dry-sea-76064-c9baeed38795.herokuapp.com/generate";
     setLoadingMessage();
 
@@ -230,19 +238,20 @@ const WineForm = () => {
       <p>{generateSuggestion()}</p>
       <p>{loadingMessage}</p>
       {generatedSentence.map((wine, index) => (
-        <div key={index} style={{ marginBottom: "20px" }}>
-          <h3>{wine.name}</h3>
-
-          <p>
-            <strong>Price:</strong> {wine.price}
-          </p>
-          <p>
-            <strong>Description:</strong> {wine.description}
-          </p>
-          <p>
-            <strong>Reason:</strong> {wine.reason}
-          </p>
-        </div>
+        <Card key={index} style={{ marginBottom: "20px" }}>
+          <CardContent>
+            <Typography variant="h5">{wine.name}</Typography>
+            <Typography color="textSecondary">
+              <strong>Price:</strong> {wine.price}
+            </Typography>
+            <Typography>
+              <strong>Description:</strong> {wine.description}
+            </Typography>
+            <Typography>
+              <strong>Reason:</strong> {wine.reason}
+            </Typography>
+          </CardContent>
+        </Card>
       ))}
     </main>
   );
