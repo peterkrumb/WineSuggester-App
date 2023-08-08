@@ -5,8 +5,8 @@
     "start:server": "cd server && node index.js",
     "start:client": "cd client && npm install && npm run build",
     "start": "concurrently \"npm run start:server\" \"npm run start:client\"",
-    "start:client dev": "cd client && npm run dev",
-    "start dev": "concurrently \"npm run start:server\" \"npm run start:client dev\""
+    "start:dev": "cd client && npm run dev",
+    "start dev": "concurrently \"npm run start:server\" \"npm run start:dev\""
   },
   "dependencies": {
     "@emotion/react": "^11.11.1",
