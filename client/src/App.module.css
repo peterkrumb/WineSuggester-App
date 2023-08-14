@@ -13,6 +13,14 @@
   font-weight: bold;
   font-style: normal;
 }
+
+body {
+  margin: 0;
+  padding: 0;
+
+  background-color: #fff7e4;
+}
+
 .main,
 .main input {
   font-size: 16px;
@@ -24,7 +32,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding-top: 60px;
+  /* padding-top: 60px; */
 }
 .main .icon {
   width: 200px;
@@ -113,6 +121,8 @@
   flex-direction: column;
   align-items: center; /* Centers items horizontally */
   justify-content: flex-start; /* Aligns items to the top */
+  background: linear-gradient(to bottom right, #f8d8c8, #fff7e4);
+  border-radius: 20px;
 }
 
 .childContainer {

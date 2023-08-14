@@ -32,6 +32,7 @@ const WineForm = () => {
   const [showAdvancedOptions, setShowAdvancedOptions] = useState(false);
   const [isBodyDisabled, setIsBodyDisabled] = useState(true);
   const [isSweetnessDisabled, setIsSweetnessDisabled] = useState(true);
+  const [priceRange, setPriceRange] = useState([10, 250]);
 
   const levels = [
     "light",
@@ -209,13 +210,13 @@ const WineForm = () => {
   };
 
   const toggleBody = () => {
-    console.log("toggleBody");
     setIsBodyDisabled((prevState) => !prevState); // Toggle the value of isBodyDisabled
   };
+
   const toggleSweetness = () => {
-    console.log("toggleBody");
     setIsSweetnessDisabled((prevState) => !prevState); // Toggle the value of isBodyDisabled
   };
+
   const getSelectedOptions = () => {
     return options
       .filter((option) => option.selected)
@@ -239,6 +240,10 @@ const WineForm = () => {
         : option
     );
     setOptions(updatedOptions);
+  };
+
+  const handlePriceChange = (event, newValue) => {
+    setPriceRange(newValue);
   };
 
   const generateSuggestion = () => {
@@ -275,184 +280,201 @@ const WineForm = () => {
   };
 
   return (
-    <main className={styles.main}>
-      <img src={GlassWine} alt="" className={styles.icon} />
-      <h3 className={styles.h3}>
-        The world's most sophisticated wine assistant
-      </h3>
-      <div className="ripple-effect"></div>
-      <form className={styles.form} onSubmit={onSubmit}>
-        <div>
-          <label htmlFor="wineType">Choose a wine type:</label>
-          <Select
-            id="wineType"
-            name="wineType"
-            value={wineTypeOptions.find((option) => option.value === wineType)}
-            onChange={handleWineTypeChange}
-            options={wineTypeOptions}
-          />
-          <label htmlFor="wineVarietal">Choose a wine varietal:</label>
-          <Select
-            id="wineVarietal"
-            name="wineVarietal"
-            value={
-              wineVarietal
-                ? varietals.find((option) => option.value === wineVarietal)
-                : null
-            }
-            onChange={handleVarietalChange}
-            options={varietals.map((varietal) => ({
-              value: varietal,
-              label: varietal,
-            }))}
-          />
-        </div>
-      </form>
-      {/* here we add a checkbox for advanced options */}
-      <div className={styles.checkbox}>
-        <Checkbox onChange={handleAdvancedOptionsChange} />
-
-        <label htmlFor="advancedOptions">
-          <span className={styles.checkboxLabel}>Advanced Options</span>
-        </label>
-        {showAdvancedOptions && (
-          <div className={styles.advancedOptionsContainer}>
-            <Switch onChange={toggleBody} />
-            {/* <div className="optionsContainer"> */}
-            <div>
-              <Typography>Body</Typography>
-            </div>
-            <Slider
-              aria-label="Body"
-              disabled={isBodyDisabled}
-              sx={{
-                width: 300,
-              }}
-              defaultValue={2}
-              aria-labelledby="discrete-slider"
-              size="large"
-              step={1}
-              marks
-              min={0}
-              max={4}
-              value={value}
-              onChange={handleChange}
-              valueLabelFormat={(val) => levels[val]}
+    <div className="body">
+      <main className={styles.main}>
+        <img src={GlassWine} alt="" className={styles.icon} />
+        <h3 className={styles.h3}>
+          The world's most sophisticated wine assistant
+        </h3>
+        <div className="ripple-effect"></div>
+        <form className={styles.form} onSubmit={onSubmit}>
+          <div>
+            <label htmlFor="wineType">Choose a wine type:</label>
+            <Select
+              id="wineType"
+              name="wineType"
+              value={wineTypeOptions.find(
+                (option) => option.value === wineType
+              )}
+              onChange={handleWineTypeChange}
+              options={wineTypeOptions}
             />
-            <div>{levels[value]}</div>
-            <br />
-            <br />
-            {/* </div> */}
-            <Switch onChange={toggleSweetness} />
-            <p>Sweetness</p>
-
-            <Slider
-              disabled={isSweetnessDisabled}
-              sx={{
-                width: 300,
-              }}
-              defaultValue={2}
-              aria-labelledby="discrete-slider"
-              size="large"
-              step={1}
-              marks
-              min={0}
-              max={3}
-              value={sweetnessValue}
-              onChange={handleSweetnessChange}
-              valueLabelFormat={(val) => sweetnessLevels[val]}
+            <label htmlFor="wineVarietal">Choose a wine varietal:</label>
+            <Select
+              id="wineVarietal"
+              name="wineVarietal"
+              value={
+                wineVarietal
+                  ? varietals.find((option) => option.value === wineVarietal)
+                  : null
+              }
+              onChange={handleVarietalChange}
+              options={varietals.map((varietal) => ({
+                value: varietal,
+                label: varietal,
+              }))}
             />
-            <div>{sweetnessLevels[sweetnessValue]}</div>
-            <div>
-              <Paper
+            <Slider
+              value={priceRange}
+              onChange={handlePriceChange}
+              valueLabelDisplay="auto"
+              min={0}
+              max={200}
+              step={5}
+              marks
+              valueLabelFormat={(value) => `$${value}`}
+              // valueLabelRender={(valueLabelProps) => (
+              //   <span>{`$${valueLabelProps.value}`}</span>
+              // )}
+            />
+          </div>
+        </form>
+        {/* here we add a checkbox for advanced options */}
+        <div className={styles.checkbox}>
+          <Checkbox onChange={handleAdvancedOptionsChange} />
+
+          <label htmlFor="advancedOptions">
+            <span className={styles.checkboxLabel}>Advanced Options</span>
+          </label>
+          {showAdvancedOptions && (
+            <div className={styles.advancedOptionsContainer}>
+              <Switch onChange={toggleBody} />
+              {/* <div className="optionsContainer"> */}
+              <div>
+                <Typography>Body</Typography>
+              </div>
+              <Slider
+                aria-label="Body"
+                disabled={isBodyDisabled}
                 sx={{
-                  height: "150px",
-                  overflowY: "auto",
-                  width: "320px",
-                  position: "relative",
+                  width: 300,
                 }}
-              >
+                defaultValue={2}
+                aria-labelledby="discrete-slider"
+                size="large"
+                step={1}
+                marks
+                min={0}
+                max={4}
+                value={value}
+                onChange={handleChange}
+                valueLabelFormat={(val) => levels[val]}
+              />
+              <div>{levels[value]}</div>
+              <br />
+              <br />
+              {/* </div> */}
+              <Switch onChange={toggleSweetness} />
+              <p>Sweetness</p>
+
+              <Slider
+                disabled={isSweetnessDisabled}
+                sx={{
+                  width: 300,
+                }}
+                defaultValue={2}
+                aria-labelledby="discrete-slider"
+                size="large"
+                step={1}
+                marks
+                min={0}
+                max={3}
+                value={sweetnessValue}
+                onChange={handleSweetnessChange}
+                valueLabelFormat={(val) => sweetnessLevels[val]}
+              />
+              <div>{sweetnessLevels[sweetnessValue]}</div>
+              <div>
+                <Paper
+                  sx={{
+                    height: "150px",
+                    overflowY: "auto",
+                    width: "320px",
+                    position: "relative",
+                  }}
+                >
+                  {options
+                    .filter((option) => option.selected)
+                    .map((option, index) => (
+                      <StyledChip
+                        key={index}
+                        label={option.label}
+                        onDelete={() => handleRemoveOption(option)}
+                        color="primary"
+                        style={{ backgroundColor: option.color }}
+                      />
+                    ))}
+                  {options.length > 0 && (
+                    <Chip
+                      label="Clear All"
+                      onClick={handleClearAll}
+                      color="primary"
+                      // add more styles or props as required
+                    />
+                  )}
+                </Paper>
+                <div className={styles.childContainer}>
+                  <Typography variant="h5">Notes</Typography>
+                  <div
+                    style={{
+                      display: "flex",
+                      flexWrap: "wrap",
+                      gap: "5px",
+                      marginTop: "10px",
+                    }}
+                  ></div>
+                </div>
+              </div>
+              <div className={styles.childContainer}>
                 {options
-                  .filter((option) => option.selected)
+                  .filter((option) => !option.selected)
                   .map((option, index) => (
                     <StyledChip
                       key={index}
                       label={option.label}
-                      onDelete={() => handleRemoveOption(option)}
-                      color="primary"
+                      clickable
+                      onClick={() => handleAddOption(option)}
                       style={{ backgroundColor: option.color }}
                     />
                   ))}
-                {options.length > 0 && (
-                  <Chip
-                    label="Clear All"
-                    onClick={handleClearAll}
-                    color="primary"
-                    // add more styles or props as required
-                  />
-                )}
-              </Paper>
-              <div className={styles.childContainer}>
-                <Typography variant="h5">Notes</Typography>
-                <div
-                  style={{
-                    display: "flex",
-                    flexWrap: "wrap",
-                    gap: "5px",
-                    marginTop: "10px",
-                  }}
-                ></div>
               </div>
             </div>
-            <div className={styles.childContainer}>
-              {options
-                .filter((option) => !option.selected)
-                .map((option, index) => (
-                  <StyledChip
-                    key={index}
-                    label={option.label}
-                    clickable
-                    onClick={() => handleAddOption(option)}
-                    style={{ backgroundColor: option.color }}
-                  />
-                ))}
-            </div>
-          </div>
-        )}
-      </div>
-
-      <button className={styles.button} type="button" onClick={onSubmit}>
-        Get Wine Recommendation
-      </button>
-      <p>{generateSuggestion()}</p>
-
-      <p>{loadingMessage}</p>
-      {generatedSentence.map((wine, index) => (
-        <div className="cardContainer">
-          <Card
-            key={index}
-            style={{
-              marginBottom: "20px",
-              width: "1000px",
-              margin: "10px",
-            }}
-          >
-            <CardContent>
-              <Typography variant="h5">{wine.name}</Typography>
-              <Typography color="textSecondary">
-                <strong>Price:</strong> {wine.price}
-              </Typography>
-              <Typography>
-                <strong>Description:</strong> {wine.description}
-              </Typography>
-              <Typography>
-                <strong>Reason:</strong> {wine.reason}
-              </Typography>
-            </CardContent>
-          </Card>
+          )}
         </div>
-      ))}
-    </main>
+
+        <button className={styles.button} type="button" onClick={onSubmit}>
+          Get Wine Recommendation
+        </button>
+        <p>{generateSuggestion()}</p>
+
+        <p>{loadingMessage}</p>
+        {generatedSentence.map((wine, index) => (
+          <div className="cardContainer">
+            <Card
+              key={index}
+              style={{
+                marginBottom: "20px",
+                width: "1000px",
+                margin: "10px",
+              }}
+            >
+              <CardContent>
+                <Typography variant="h5">{wine.name}</Typography>
+                <Typography color="textSecondary">
+                  <strong>Price:</strong> {wine.price}
+                </Typography>
+                <Typography>
+                  <strong>Description:</strong> {wine.description}
+                </Typography>
+                <Typography>
+                  <strong>Reason:</strong> {wine.reason}
+                </Typography>
+              </CardContent>
+            </Card>
+          </div>
+        ))}
+      </main>
+    </div>
   );
 };
 
