@@ -17,8 +17,6 @@
 body {
   margin: 0;
   padding: 0;
-
-  background-color: #fff7e4;
 }
 
 .main,
@@ -26,7 +24,7 @@ body {
   font-size: 16px;
   line-height: 24px;
   color: #353740;
-  font-family: "ColfaxAI", Helvetica, sans-serif;
+  font-family: "Source Sans Pro";
 }
 .main {
   display: flex;
@@ -39,11 +37,16 @@ body {
   height: 200px;
 }
 .main h3 {
+  color: #080a0b;
   font-size: 32px;
-  line-height: 40px;
-  font-weight: bold;
-  color: #202123;
-  margin: 16px 0 40px;
+}
+
+.main h4 {
+  color: #080a0b;
+  font-size: 16px;
+  font-family: "Source Sans Pro";
+  font-weight: 700;
+  line-height: 22px;
 }
 .main form {
   display: flex;
@@ -102,38 +105,90 @@ body {
   transform: translateY(4px);
 }
 
-.ripple-effect {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: 0;
-  background: rgba(255, 255, 255, 0.7);
-  border-radius: 50%;
-  transform: scale(0);
-  pointer-events: none;
-}
-
 .advancedOptionsContainer {
-  height: 600px; /* Or whatever height is appropriate */
+  padding: 20px 30px;
+  position: relative;
+  z-index: 1002;
+  top: 50%;
+  left: 50%;
+  width: 600px;
+  /* height: 785px; */
+  background-color: #ffffff;
+  border-radius: 24px;
+  border: 1px solid #8c8c8c;
+  box-sizing: border-box;
+
+  transform: translate(-50%, -50%);
+  /* This centers the div */
   overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  align-items: center; /* Centers items horizontally */
-  justify-content: flex-start; /* Aligns items to the top */
-  background: linear-gradient(to bottom right, #f8d8c8, #fff7e4);
-  border-radius: 20px;
+  max-height: 80vh;
 }
 
 .childContainer {
-  max-width: 320px; /* or whatever width you find appropriate */
+  max-width: 320px; /* Width as you've set */
+  max-height: 150px; /* This will determine when the overflow starts */
+  overflow-y: auto; /* Add a vertical scrollbar when the content overflows */
   display: flex;
   flex-wrap: wrap;
   gap: 5px;
+  padding-right: 8px; /* This will prevent the scrollbar from overlaying your chips */
 }
 
 .cardContainer {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
+}
+
+.header {
+  top: 0px;
+  left: 1px;
+  width: 100%;
+  height: 102px;
+  background-color: #282828;
+}
+
+.applyFilterBtn {
+  top: 763px;
+  left: 752px;
+  width: 220px;
+  height: 48px;
+  padding: 0px 8px;
+  border: 0;
+  box-sizing: border-box;
+  border-radius: 24px;
+  background-color: #030303;
+  color: #ffffff;
+  font-size: 16px;
+  font-family: "Source Sans Pro";
+  font-weight: 700;
+  line-height: 22px;
+  outline: none;
+}
+
+.disablePointerEvents {
+  pointer-events: none;
+}
+
+.advancedOptionsContainer::-webkit-scrollbar {
+  width: 10px; /* Width of the vertical scrollbar */
+}
+
+.advancedOptionsContainer::-webkit-scrollbar-track {
+  background-color: #f4f4f4; /* Background of the scrollbar track (the lane) */
+  border-radius: 10px; /* Rounded corners for the track */
+}
+
+.advancedOptionsContainer::-webkit-scrollbar-thumb {
+  background-color: #bdbdbd; /* Color of the scroll thumb (the draggable part) */
+  border-radius: 10px; /* Rounded corners for the thumb */
+}
+
+.advancedOptionsContainer::-webkit-scrollbar-thumb:hover {
+  background-color: #a8a8a8; /* Color of the thumb on hover */
+}
+
+.advancedOptionsContainer {
+  scrollbar-width: thin; /* "thin" or "auto" or "none" */
+  scrollbar-color: #bdbdbd #f4f4f4; /* thumb and track color */
 }

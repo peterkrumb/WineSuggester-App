@@ -2,8 +2,9 @@ import styles from "./App.module.css";
 import GlassWine from "./assets/Glass-Wine.jpeg";
 import Select from "react-select";
 import axios from "axios";
+import Header from "./components/Header";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 import {
   redVarietals,
@@ -21,6 +22,7 @@ import {
   Checkbox,
   Switch,
 } from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
 import { styled } from "@mui/system";
 
 const WineForm = () => {
@@ -32,7 +34,11 @@ const WineForm = () => {
   const [showAdvancedOptions, setShowAdvancedOptions] = useState(false);
   const [isBodyDisabled, setIsBodyDisabled] = useState(true);
   const [isSweetnessDisabled, setIsSweetnessDisabled] = useState(true);
+  const [isAdvancedOptionsChecked, setIsAdvancedOptionsChecked] =
+    useState(false);
+
   const [priceRange, setPriceRange] = useState([10, 250]);
+  const [selectOpen, setSelectOpen] = useState(false);
 
   const levels = [
     "light",
@@ -50,6 +56,7 @@ const WineForm = () => {
     { value: "white", label: "White" },
     { value: "spumante", label: "Spumante (Sparkling)" },
   ];
+
   const handleWineTypeChange = (selectedOption) => {
     setWineType(selectedOption.value);
     if (selectedOption.value === "red") {
@@ -61,10 +68,8 @@ const WineForm = () => {
     }
     setWineVarietal(null); // Reset the selected varietal when wine type changes
   };
-  // Any other state, useEffect or functions related to this component
 
   const handleVarietalChange = (selectedOption) => {
-    // Handle the varietal change
     const selectedVarietal = selectedOption ? selectedOption.value : null; // If the selected option is null, set the varietal to null
     setWineVarietal(selectedVarietal); // Set the varietal state
   };
@@ -282,14 +287,15 @@ const WineForm = () => {
   return (
     <div className="body">
       <main className={styles.main}>
+        <Header title="Wine Assistant" />
         <img src={GlassWine} alt="" className={styles.icon} />
         <h3 className={styles.h3}>
           The world's most sophisticated wine assistant
         </h3>
-        <div className="ripple-effect"></div>
+
         <form className={styles.form} onSubmit={onSubmit}>
-          <div>
-            <label htmlFor="wineType">Choose a wine type:</label>
+          <label htmlFor="wineType">Choose a wine type:</label>
+          <div style={{ zIndex: 1001 }}>
             <Select
               id="wineType"
               name="wineType"
@@ -298,8 +304,14 @@ const WineForm = () => {
               )}
               onChange={handleWineTypeChange}
               options={wineTypeOptions}
+              onOpen={() => setSelectOpen(true)}
+              onClose={() => setSelectOpen(false)}
             />
-            <label htmlFor="wineVarietal">Choose a wine varietal:</label>
+          </div>
+          <br />
+
+          <label htmlFor="wineVarietal">Choose a wine varietal:</label>
+          <div style={{ zIndex: 1000 }}>
             <Select
               id="wineVarietal"
               name="wineVarietal"
@@ -314,35 +326,66 @@ const WineForm = () => {
                 label: varietal,
               }))}
             />
-            <Slider
-              value={priceRange}
-              onChange={handlePriceChange}
-              valueLabelDisplay="auto"
-              min={0}
-              max={200}
-              step={5}
-              marks
-              valueLabelFormat={(value) => `$${value}`}
-              // valueLabelRender={(valueLabelProps) => (
-              //   <span>{`$${valueLabelProps.value}`}</span>
-              // )}
-            />
           </div>
+          <Slider
+            sx={{
+              margin: "20px",
+            }}
+            value={priceRange}
+            onChange={handlePriceChange}
+            valueLabelDisplay="auto"
+            min={0}
+            max={200}
+            step={5}
+            marks
+            valueLabelFormat={(value) => `$${value}`}
+            // valueLabelRender={(valueLabelProps) => (
+            //   <span>{`$${valueLabelProps.value}`}</span>
+            // )}
+          />
         </form>
         {/* here we add a checkbox for advanced options */}
         <div className={styles.checkbox}>
-          <Checkbox onChange={handleAdvancedOptionsChange} />
+          <Checkbox
+            onChange={handleAdvancedOptionsChange}
+            checked={isAdvancedOptionsChecked}
+          />
 
           <label htmlFor="advancedOptions">
             <span className={styles.checkboxLabel}>Advanced Options</span>
           </label>
           {showAdvancedOptions && (
+            <div
+              style={{
+                position: "fixed",
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                backgroundColor: "rgba(0, 0, 0, 0.5)",
+                zIndex: 1001,
+              }}
+              className="overlay"
+            ></div>
+          )}
+          {showAdvancedOptions && (
             <div className={styles.advancedOptionsContainer}>
+              <h3>Filter</h3>
+              <CloseIcon
+                onClick={() => {
+                  handleAdvancedOptionsChange();
+                  setIsBodyDisabled(true);
+                  setIsSweetnessDisabled(true);
+                }}
+                sx={{
+                  position: "absolute",
+                  top: "20px", // Adjust this as needed
+                  right: "20px", // Adjust this as needed
+                  cursor: "pointer",
+                }}
+              />
               <Switch onChange={toggleBody} />
-              {/* <div className="optionsContainer"> */}
-              <div>
-                <Typography>Body</Typography>
-              </div>
+              <h4 className="aocHeader">Body</h4>
               <Slider
                 aria-label="Body"
                 disabled={isBodyDisabled}
@@ -360,13 +403,10 @@ const WineForm = () => {
                 onChange={handleChange}
                 valueLabelFormat={(val) => levels[val]}
               />
-              <div>{levels[value]}</div>
-              <br />
-              <br />
+              {!isBodyDisabled && <div>{levels[value]}</div>} <br />
               {/* </div> */}
               <Switch onChange={toggleSweetness} />
-              <p>Sweetness</p>
-
+              <h4>Sweetness</h4>
               <Slider
                 disabled={isSweetnessDisabled}
                 sx={{
@@ -383,7 +423,10 @@ const WineForm = () => {
                 onChange={handleSweetnessChange}
                 valueLabelFormat={(val) => sweetnessLevels[val]}
               />
-              <div>{sweetnessLevels[sweetnessValue]}</div>
+              {!isSweetnessDisabled && (
+                <div>{sweetnessLevels[sweetnessValue]}</div>
+              )}
+              <br />
               <div>
                 <Paper
                   sx={{
@@ -391,8 +434,28 @@ const WineForm = () => {
                     overflowY: "auto",
                     width: "320px",
                     position: "relative",
+                    padding: "8px",
+                    display: "flex",
+                    flexDirection: "column",
                   }}
                 >
+                  <div>
+                    {options.length > 0 && (
+                      <Chip
+                        label="Clear All"
+                        onClick={handleClearAll}
+                        color="primary"
+                      />
+                    )}
+                  </div>
+
+                  <div
+                    sx={{
+                      display: "flex",
+                      flexWrap: "wrap",
+                      alignItems: "flex-start",
+                    }}
+                  ></div>
                   {options
                     .filter((option) => option.selected)
                     .map((option, index) => (
@@ -401,29 +464,25 @@ const WineForm = () => {
                         label={option.label}
                         onDelete={() => handleRemoveOption(option)}
                         color="primary"
-                        style={{ backgroundColor: option.color }}
+                        style={{ backgroundColor: option.color, margin: "4px" }}
                       />
                     ))}
-                  {options.length > 0 && (
+                  {/* {options.length > 0 && (
                     <Chip
                       label="Clear All"
                       onClick={handleClearAll}
                       color="primary"
+                      sx={{
+                        position: "absolute", // Positioning it absolutely
+                        top: "8px", // Some gap from the top
+                        right: "8px", // Some gap from the right
+                      }}
                       // add more styles or props as required
                     />
-                  )}
+                  )} */}
                 </Paper>
-                <div className={styles.childContainer}>
-                  <Typography variant="h5">Notes</Typography>
-                  <div
-                    style={{
-                      display: "flex",
-                      flexWrap: "wrap",
-                      gap: "5px",
-                      marginTop: "10px",
-                    }}
-                  ></div>
-                </div>
+                <br />
+                <Typography variant="h5">Notes</Typography>
               </div>
               <div className={styles.childContainer}>
                 {options
@@ -438,6 +497,12 @@ const WineForm = () => {
                     />
                   ))}
               </div>
+              <button
+                className={styles.applyFilterBtn}
+                onClick={handleAdvancedOptionsChange}
+              >
+                Apply Filter
+              </button>
             </div>
           )}
         </div>
