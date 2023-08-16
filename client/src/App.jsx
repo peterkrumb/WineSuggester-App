@@ -3,8 +3,9 @@ import GlassWine from "./assets/Glass-Wine.jpeg";
 import Select from "react-select";
 import axios from "axios";
 import Header from "./components/Header";
+import { generateSuggestion } from "./components/suggestionGenerator";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 
 import {
   redVarietals,
@@ -21,6 +22,7 @@ import {
   Slider,
   Checkbox,
   Switch,
+  Snackbar,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { styled } from "@mui/system";
@@ -36,10 +38,10 @@ const WineForm = () => {
   const [isSweetnessDisabled, setIsSweetnessDisabled] = useState(true);
   const [isAdvancedOptionsChecked, setIsAdvancedOptionsChecked] =
     useState(false);
-  const [shouldCheckboxBeChecked, setShouldCheckboxBeChecked] = useState(false);
-
-  const [priceRange, setPriceRange] = useState([10, 250]);
+  const [openSnackbar, setOpenSnackbar] = useState(false);
   const [selectOpen, setSelectOpen] = useState(false);
+
+  const [priceRange, setPriceRange] = useState([0, 250]);
 
   const levels = [
     "light",
@@ -72,7 +74,7 @@ const WineForm = () => {
 
   const handleVarietalChange = (selectedOption) => {
     const selectedVarietal = selectedOption ? selectedOption.value : null; // If the selected option is null, set the varietal to null
-    setWineVarietal(selectedVarietal); // Set the varietal state
+    setWineVarietal(selectedVarietal);
   };
 
   useEffect(() => {
@@ -103,13 +105,34 @@ const WineForm = () => {
     margin: theme.spacing(0.5),
   }));
 
-  const handleClearAll = () => {
+  // Clear all chips from selected flavors
+  const handleClearAllChips = () => {
     setOptions((prevOptions) =>
       prevOptions.map((option) => ({
         ...option,
         selected: false,
       }))
     );
+  };
+
+  const handleClearAll = () => {
+    //reset all advanced options
+    setOptions((prevOptions) =>
+      prevOptions.map((option) => ({
+        ...option,
+        selected: false,
+      }))
+    );
+    setIsBodyDisabled(true);
+    setIsSweetnessDisabled(true);
+    setValue(2);
+    setSweetnessValue(2);
+    setPriceRange([0, 250]);
+    setOpenSnackbar(true);
+  };
+
+  const handleCloseSnackbar = () => {
+    setOpenSnackbar(false);
   };
 
   const [options, setOptions] = useState([
@@ -246,7 +269,8 @@ const WineForm = () => {
       let currentWine = {};
 
       for (let i = 0; i < responseSentences.length; i++) {
-        const sentence = responseSentences[i].trim();
+        // For each sentence in the response
+        const sentence = responseSentences[i].trim(); // Remove any leading or trailing spaces
 
         if (sentence.startsWith("Wine Recommendation")) {
           if (currentWine.name) {
@@ -294,6 +318,7 @@ const WineForm = () => {
     setIsSweetnessDisabled((prevState) => !prevState); // Toggle the value of isBodyDisabled
   };
 
+  // Filter through the options array, determines if the flavor was selected or not, and returns them separated by commas for "generateSuggestion"
   const getSelectedOptions = () => {
     return options
       .filter((option) => option.selected)
@@ -323,61 +348,6 @@ const WineForm = () => {
     setPriceRange(newValue);
   };
 
-  const generateSuggestion = () => {
-    const level = levels[value]; // Get the body level based on the value
-    const selectedFlavors = getSelectedOptions();
-
-    if (wineType && wineVarietal) {
-      let suggestion = `You selected the ${wineType} wine ${wineVarietal}`;
-
-      let descriptors = []; // An array to hold descriptors like body and sweetness
-
-      if (!isBodyDisabled && level) {
-        descriptors.push(`a ${level} body`);
-      }
-
-      if (!isSweetnessDisabled) {
-        const selectedSweetness = sweetnessLevels[sweetnessValue];
-
-        if (selectedSweetness === "dessert") {
-          descriptors.push("rich sweetness");
-        } else if (selectedSweetness === "dry") {
-          descriptors.push("low sweetness");
-        } else if (selectedSweetness === "semi-sweet") {
-          descriptors.push("subtle sweetness");
-        } else if (selectedSweetness === "sweet") {
-          descriptors.push("sweetness");
-        }
-      }
-
-      if (selectedFlavors) {
-        let flavors = selectedFlavors.split(", ");
-        if (flavors.length > 1) {
-          let lastFlavor = flavors.pop();
-          descriptors.push(
-            `flavors of ${flavors.join(", ")} and ${lastFlavor}`
-          );
-        } else {
-          descriptors.push(`flavor of ${flavors[0]}`);
-        }
-      }
-
-      if (descriptors.length) {
-        suggestion += " with " + descriptors.join(", ");
-
-        // Add "and" between body and sweetness if both are chosen
-        if (!isBodyDisabled && !isSweetnessDisabled) {
-          suggestion = suggestion.replace(/, ([^,]*)$/, " and $1");
-        }
-      } else {
-        suggestion += ".";
-      }
-
-      return suggestion; // Return the formatted suggestion
-    } else {
-      return "Please select a wine type and varietal."; // Return an error message if wineType or wineVarietal is missing
-    }
-  };
   // Effect to update the checkbox state when parameters or options change
   useEffect(() => {
     // Check if any parameter or option is not in its default state
@@ -401,7 +371,7 @@ const WineForm = () => {
 
         <form className={styles.form} onSubmit={onSubmit}>
           <label htmlFor="wineType">Choose a wine type:</label>
-          <div style={{ zIndex: 1001 }}>
+          <div style={{ zIndex: 1001, cursor: "pointer" }}>
             <Select
               id="wineType"
               name="wineType"
@@ -433,10 +403,9 @@ const WineForm = () => {
               }))}
             />
           </div>
+
           <Slider
-            sx={{
-              margin: "20px",
-            }}
+            sx={{ marginTop: "40px", marginBottom: "20px" }}
             value={priceRange}
             onChange={handlePriceChange}
             valueLabelDisplay="auto"
@@ -445,13 +414,10 @@ const WineForm = () => {
             step={5}
             marks
             valueLabelFormat={(value) => `$${value}`}
-            // valueLabelRender={(valueLabelProps) => (
-            //   <span>{`$${valueLabelProps.value}`}</span>
-            // )}
           />
         </form>
         {/* here we add a checkbox for advanced options */}
-        <div className={styles.checkbox}>
+        <div>
           <Checkbox
             onChange={handleAdvancedOptionsChange}
             checked={isAdvancedOptionsChecked}
@@ -550,8 +516,9 @@ const WineForm = () => {
                     {options.length > 0 && (
                       <Chip
                         label="Clear All"
-                        onClick={handleClearAll}
+                        onClick={handleClearAllChips}
                         color="primary"
+                        style={{ fontFamily: "source sans pro, sans-serif" }}
                       />
                     )}
                   </div>
@@ -571,12 +538,16 @@ const WineForm = () => {
                         label={option.label}
                         onDelete={() => handleRemoveOption(option)}
                         color="primary"
-                        style={{ backgroundColor: option.color, margin: "4px" }}
+                        style={{
+                          backgroundColor: option.color,
+                          margin: "4px",
+                          fontFamily: "source sans pro, sans-serif",
+                        }}
                       />
                     ))}
                 </Paper>
                 <br />
-                <Typography variant="h5">Notes</Typography>
+                <h3>Notes</h3>
               </div>
               <div className={styles.childContainer}>
                 {options
@@ -595,6 +566,9 @@ const WineForm = () => {
                     />
                   ))}
               </div>
+              <button className={styles.clearBtn} onClick={handleClearAll}>
+                Clear All
+              </button>
               <button
                 className={styles.applyFilterBtn}
                 onClick={handleAdvancedOptionsChange}
@@ -603,12 +577,30 @@ const WineForm = () => {
               </button>
             </div>
           )}
+          <Snackbar
+            open={openSnackbar}
+            autoHideDuration={1750}
+            onClose={handleCloseSnackbar}
+            message="Filters reset"
+          />
         </div>
 
         <button className={styles.button} type="button" onClick={onSubmit}>
           Get Wine Recommendation
         </button>
-        <p>{generateSuggestion()}</p>
+        <p>
+          {generateSuggestion(
+            wineType,
+            wineVarietal,
+            levels,
+            sweetnessLevels,
+            value,
+            sweetnessValue,
+            isBodyDisabled,
+            isSweetnessDisabled,
+            getSelectedOptions
+          )}
+        </p>
 
         <p>{loadingMessage}</p>
         {generatedSentence.map((wine, index) => (
