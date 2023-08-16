@@ -34,7 +34,8 @@ body {
 .main form {
   display: flex;
   flex-direction: column;
-  width: 320px;
+  width: 90%;
+  max-width: 320px;
 }
 
 .main .result {
@@ -70,12 +71,13 @@ body {
 }
 
 .advancedOptionsContainer {
-  padding: 20px 30px;
+  padding: 20px 5%;
   position: relative;
   z-index: 1002;
   top: 50%;
   left: 50%;
-  width: 600px;
+  width: 90%;
+  max-width: 600px;
   background-color: #ffffff;
   border-radius: 24px;
   border: 1px solid #8c8c8c;
@@ -83,6 +85,18 @@ body {
   transform: translate(-50%, -50%);
   overflow-y: auto;
   max-height: 80vh;
+}
+
+@media (min-width: 768px) {
+  .advancedOptionsContainer {
+    padding: 20px 30px;
+    width: 80%;
+  }
+}
+@media (max-width: 600px) {
+  .main h3 {
+    font-size: 24px;
+  }
 }
 
 .childContainer {
@@ -201,4 +215,40 @@ body {
 .childContainer {
   scrollbar-width: thin; /* "thin" or "auto" or "none" */
   scrollbar-color: #bdbdbd #f4f4f4; /* thumb and track color */
+}
+
+.headerIcon {
+  /* style the header logo to be much smaller and look nicely at the top left of the header */
+  width: 100px;
+  height: 100px;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+}
+
+@media (max-width: 600px) {
+  .button {
+    padding: 8px 16px;
+    font-size: 0.8em;
+  }
+}
+
+@media (max-width: 600px) {
+  .cardContainer {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 600px) {
+  .childContainer {
+    height: auto;
+    max-height: 70vh;
+  }
+}
+
+@media (max-width: 600px) {
+  .headerIcon {
+    width: 70px;
+    height: 70px;
+  }
 }

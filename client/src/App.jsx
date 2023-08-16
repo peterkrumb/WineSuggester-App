@@ -607,9 +607,11 @@ const WineForm = () => {
           <div className="cardContainer">
             <Card
               key={index}
+              className="suggestionCard"
               style={{
                 marginBottom: "20px",
-                width: "1000px",
+                width: "90%", // Use a relative width
+                maxWidth: "1000px", // Set a maximum width
                 margin: "10px",
               }}
             >
