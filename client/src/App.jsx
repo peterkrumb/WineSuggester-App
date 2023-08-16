@@ -36,6 +36,7 @@ const WineForm = () => {
   const [isSweetnessDisabled, setIsSweetnessDisabled] = useState(true);
   const [isAdvancedOptionsChecked, setIsAdvancedOptionsChecked] =
     useState(false);
+  const [shouldCheckboxBeChecked, setShouldCheckboxBeChecked] = useState(false);
 
   const [priceRange, setPriceRange] = useState([10, 250]);
   const [selectOpen, setSelectOpen] = useState(false);
@@ -201,6 +202,12 @@ const WineForm = () => {
   const onSubmit = async (event) => {
     event.preventDefault();
 
+    if (!wineVarietal) {
+      // Display an error message or take any appropriate action
+      console.log("Please select a varietal");
+      return; // Stop the function execution if varietal is not selected
+    }
+
     let prompt = `${wineVarietal}`;
 
     // Check body state and append if not in its default state
@@ -216,13 +223,14 @@ const WineForm = () => {
     // Check flavors state and append if any flavors are selected
     const flavors = getSelectedOptions();
     if (flavors) {
-      prompt += ` with flavors of ${flavors}`; // Append the selected flavors to your prompt
+      prompt += ` with flavors of ${flavors}`;
     }
 
     // Check price range state and append if it's not in its default range
     if (priceRange[0] > 0 || priceRange[1] < 250) {
       prompt += ` within a price range of $${priceRange[0]} to $${priceRange[1]}`;
     }
+
     console.log("Prompt: ", prompt);
     const url = "https://dry-sea-76064-c9baeed38795.herokuapp.com/generate";
     setLoadingMessage();
@@ -232,22 +240,20 @@ const WineForm = () => {
 
       console.log("Raw Response: ", response.data.response);
 
-      const responseSentences = response.data.response.split("\n"); // Split the response into sentences based on the newline character
+      const responseSentences = response.data.response.split("\n");
 
       let wineObjects = [];
       let currentWine = {};
 
       for (let i = 0; i < responseSentences.length; i++) {
-        const sentence = responseSentences[i].trim(); // Remove leading and trailing whitespace
+        const sentence = responseSentences[i].trim();
 
         if (sentence.startsWith("Wine Recommendation")) {
-          //
           if (currentWine.name) {
-            // If there is already a wine name, push the current wine object to the array and reset the current wine object to an empty object
             wineObjects.push(currentWine);
             currentWine = {};
           }
-          currentWine.name = sentence.split(": ")[1]; // get rid of the colon and set the second part (the wine name) as the value for the name property of the current wine
+          currentWine.name = sentence.split(": ")[1];
         } else if (sentence.startsWith("Description")) {
           currentWine.description = sentence.split(": ")[1];
         } else if (sentence.startsWith("Price")) {
@@ -324,21 +330,44 @@ const WineForm = () => {
     if (wineType && wineVarietal) {
       let suggestion = `You selected the ${wineType} wine ${wineVarietal}`;
 
-      if (
-        (!isBodyDisabled && level) ||
-        !isSweetnessDisabled ||
-        selectedFlavors
-      ) {
-        if (!isBodyDisabled && level) {
-          suggestion += ` with ${level} body`;
-        }
+      let descriptors = []; // An array to hold descriptors like body and sweetness
 
-        if (!isSweetnessDisabled) {
-          suggestion += ` ${sweetnessLevels[sweetnessValue]}`;
-        }
+      if (!isBodyDisabled && level) {
+        descriptors.push(`a ${level} body`);
+      }
 
-        if (selectedFlavors) {
-          suggestion += ` and flavors of ${selectedFlavors}`;
+      if (!isSweetnessDisabled) {
+        const selectedSweetness = sweetnessLevels[sweetnessValue];
+
+        if (selectedSweetness === "dessert") {
+          descriptors.push("rich sweetness");
+        } else if (selectedSweetness === "dry") {
+          descriptors.push("low sweetness");
+        } else if (selectedSweetness === "semi-sweet") {
+          descriptors.push("subtle sweetness");
+        } else if (selectedSweetness === "sweet") {
+          descriptors.push("sweetness");
+        }
+      }
+
+      if (selectedFlavors) {
+        let flavors = selectedFlavors.split(", ");
+        if (flavors.length > 1) {
+          let lastFlavor = flavors.pop();
+          descriptors.push(
+            `flavors of ${flavors.join(", ")} and ${lastFlavor}`
+          );
+        } else {
+          descriptors.push(`flavor of ${flavors[0]}`);
+        }
+      }
+
+      if (descriptors.length) {
+        suggestion += " with " + descriptors.join(", ");
+
+        // Add "and" between body and sweetness if both are chosen
+        if (!isBodyDisabled && !isSweetnessDisabled) {
+          suggestion = suggestion.replace(/, ([^,]*)$/, " and $1");
         }
       } else {
         suggestion += ".";
@@ -349,6 +378,17 @@ const WineForm = () => {
       return "Please select a wine type and varietal."; // Return an error message if wineType or wineVarietal is missing
     }
   };
+  // Effect to update the checkbox state when parameters or options change
+  useEffect(() => {
+    // Check if any parameter or option is not in its default state
+    const anyChange =
+      !isBodyDisabled ||
+      !isSweetnessDisabled ||
+      options.some((option) => option.selected);
+
+    // Update the checkbox state accordingly
+    setIsAdvancedOptionsChecked(anyChange);
+  }, [isBodyDisabled, isSweetnessDisabled, options]);
 
   return (
     <div className="body">
@@ -534,19 +574,6 @@ const WineForm = () => {
                         style={{ backgroundColor: option.color, margin: "4px" }}
                       />
                     ))}
-                  {/* {options.length > 0 && (
-                    <Chip
-                      label="Clear All"
-                      onClick={handleClearAll}
-                      color="primary"
-                      sx={{
-                        position: "absolute", // Positioning it absolutely
-                        top: "8px", // Some gap from the top
-                        right: "8px", // Some gap from the right
-                      }}
-                      // add more styles or props as required
-                    />
-                  )} */}
                 </Paper>
                 <br />
                 <Typography variant="h5">Notes</Typography>

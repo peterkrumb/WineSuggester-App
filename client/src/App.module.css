@@ -164,6 +164,7 @@ body {
   font-weight: 700;
   line-height: 22px;
   outline: none;
+  cursor: pointer;
 }
 
 .advancedOptionsContainer::-webkit-scrollbar {
