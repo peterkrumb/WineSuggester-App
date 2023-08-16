@@ -112,52 +112,118 @@ const WineForm = () => {
   };
 
   const [options, setOptions] = useState([
-    { label: "Blackberry", color: "#4A1931", selected: false },
-    { label: "Cherry", color: "#8B0000", selected: false },
-    { label: "Strawberry", color: "#FC5A8D", selected: false },
-    { label: "Vanilla", color: "#F3E5AB", selected: false },
-    { label: "Chocolate", color: "#3B2F2F", selected: false },
-    { label: "Coffee", color: "#6F4E37", selected: false },
-    { label: "Leather", color: "#8B4513", selected: false },
-    { label: "Tobacco", color: "#79443B", selected: false },
-    { label: "Violet", color: "#9400D3", selected: false },
-    { label: "Plum", color: "#8E4585", selected: false },
-    { label: "Apple", color: "#FFD700", selected: false },
-    { label: "Pear", color: "#D1E231", selected: false },
-    { label: "Peach", color: "#FFE5B4", selected: false },
-    { label: "Honey", color: "#FFC30B", selected: false },
-    { label: "Butter", color: "#F8D568", selected: false },
-    { label: "Toast", color: "#D2691E", selected: false },
-    { label: "Citrus", color: "#FFA500", selected: false },
-    { label: "Lime", color: "#32CD32", selected: false },
-    { label: "Gooseberry", color: "#85BB65", selected: false },
-    { label: "Bell pepper", color: "#228B22", selected: false },
-    { label: "Grass", color: "#4CAF50", selected: false },
-    { label: "Melon", color: "#98DBC6", selected: false },
-    { label: "Mineral", color: "#A9A9A9", selected: false },
-    { label: "Cedar", color: "#556B2F", selected: false },
-    { label: "Smoke", color: "#708090", selected: false },
-    { label: "Mushroom", color: "#A0522D", selected: false },
-    { label: "Nutmeg", color: "#F4C430", selected: false },
-    { label: "Fig", color: "#621B18", selected: false },
-    { label: "Rose", color: "#FF007F", selected: false },
-    { label: "Apricot", color: "#FBCEB1", selected: false },
+    {
+      label: "Blackberry",
+      color: "#4A1931",
+      selected: false,
+      textColor: "#FFFFFF",
+    },
+    {
+      label: "Cherry",
+      color: "#8B0000",
+      selected: false,
+      textColor: "#FFFFFF",
+    },
+    {
+      label: "Strawberry",
+      color: "#FC5A8D",
+      selected: false,
+      textColor: "#FFFFFF",
+    },
+    {
+      label: "Vanilla",
+      color: "#F3E5AB",
+      selected: false,
+      textColor: "#4A1931",
+    },
+    {
+      label: "Chocolate",
+      color: "#3B2F2F",
+      selected: false,
+      textColor: "#F3E5AB",
+    },
+    {
+      label: "Coffee",
+      color: "#6F4E37",
+      selected: false,
+      textColor: "#F3E5AB",
+    },
+    {
+      label: "Leather",
+      color: "#8B4513",
+      selected: false,
+      textColor: "#FFFFFF",
+    },
+    {
+      label: "Tobacco",
+      color: "#79443B",
+      selected: false,
+      textColor: "#FFFFFF",
+    },
+    {
+      label: "Violet",
+      color: "#9400D3",
+      selected: false,
+      textColor: "#FFFFFF",
+    },
+    { label: "Peach", color: "#FFE5B4", selected: false, textColor: "#4A1931" },
+    { label: "Honey", color: "#FFC30B", selected: false, textColor: "#4A1931" },
+    {
+      label: "Butter",
+      color: "#F8D568",
+      selected: false,
+      textColor: "#4A1931",
+    },
+    { label: "Toast", color: "#D2691E", selected: false, textColor: "#FFFFFF" },
+    {
+      label: "Citrus",
+      color: "#FFA500",
+      selected: false,
+      textColor: "#4A1931",
+    },
+    { label: "Lime", color: "#32CD32", selected: false, textColor: "#4A1931" },
+    { label: "Melon", color: "#98DBC6", selected: false, textColor: "#4A1931" },
+    {
+      label: "Mineral",
+      color: "#A9A9A9",
+      selected: false,
+      textColor: "#4A1931",
+    },
+    { label: "Cedar", color: "#556B2F", selected: false, textColor: "#FFFFFF" },
+    { label: "Smoke", color: "#708090", selected: false, textColor: "#FFFFFF" },
+    { label: "Pear", color: "#D1E231", selected: false, textColor: "#4A1931" },
   ]);
 
   const handleAdvancedOptionsChange = (e) => {
-    setShowAdvancedOptions(!showAdvancedOptions);
+    setShowAdvancedOptions((prev) => !prev);
   };
 
   const onSubmit = async (event) => {
     event.preventDefault();
+
     let prompt = `${wineVarietal}`;
-    if (showAdvancedOptions) {
-      prompt += ` with a body of ${levels[value]} and a sweetness level of ${sweetnessLevels[sweetnessValue]}`;
-      const flavors = getSelectedOptions();
-      if (flavors) {
-        prompt += ` with flavors of ${flavors}`; // Append the selected flavors to your prompt
-      }
+
+    // Check body state and append if not in its default state
+    if (!isBodyDisabled) {
+      prompt += ` with a body of ${levels[value]}`;
     }
+
+    // Check sweetness state and append if not in its default state
+    if (!isSweetnessDisabled) {
+      prompt += ` and a sweetness level of ${sweetnessLevels[sweetnessValue]}`;
+    }
+
+    // Check flavors state and append if any flavors are selected
+    const flavors = getSelectedOptions();
+    if (flavors) {
+      prompt += ` with flavors of ${flavors}`; // Append the selected flavors to your prompt
+    }
+
+    // Check price range state and append if it's not in its default range
+    if (priceRange[0] > 0 || priceRange[1] < 250) {
+      prompt += ` within a price range of $${priceRange[0]} to $${priceRange[1]}`;
+    }
+    console.log("Prompt: ", prompt);
     const url = "https://dry-sea-76064-c9baeed38795.herokuapp.com/generate";
     setLoadingMessage();
 
@@ -374,8 +440,6 @@ const WineForm = () => {
               <CloseIcon
                 onClick={() => {
                   handleAdvancedOptionsChange();
-                  setIsBodyDisabled(true);
-                  setIsSweetnessDisabled(true);
                 }}
                 sx={{
                   position: "absolute",
@@ -384,7 +448,7 @@ const WineForm = () => {
                   cursor: "pointer",
                 }}
               />
-              <Switch onChange={toggleBody} />
+              <Switch onChange={toggleBody} checked={!isBodyDisabled} />
               <h4 className="aocHeader">Body</h4>
               <Slider
                 aria-label="Body"
@@ -405,7 +469,10 @@ const WineForm = () => {
               />
               {!isBodyDisabled && <div>{levels[value]}</div>} <br />
               {/* </div> */}
-              <Switch onChange={toggleSweetness} />
+              <Switch
+                onChange={toggleSweetness}
+                checked={!isSweetnessDisabled}
+              />
               <h4>Sweetness</h4>
               <Slider
                 disabled={isSweetnessDisabled}
@@ -493,7 +560,11 @@ const WineForm = () => {
                       label={option.label}
                       clickable
                       onClick={() => handleAddOption(option)}
-                      style={{ backgroundColor: option.color }}
+                      style={{
+                        backgroundColor: option.color,
+                        color: option.textColor,
+                        fontFamily: "source sans pro, sans-serif",
+                      }}
                     />
                   ))}
               </div>

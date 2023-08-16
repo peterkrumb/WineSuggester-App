@@ -37,6 +37,7 @@ app.get("/", (req, res) => {
 
 app.post("/generate", async (req, res) => {
   const queryDescription = req.body.queryDescription;
+  console.log(queryDescription);
   try {
     const sqlQuery = await generate(queryDescription);
     res.json({ response: sqlQuery });

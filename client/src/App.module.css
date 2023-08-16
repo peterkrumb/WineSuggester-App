@@ -125,13 +125,13 @@ body {
 }
 
 .childContainer {
-  max-width: 320px; /* Width as you've set */
-  max-height: 150px; /* This will determine when the overflow starts */
-  overflow-y: auto; /* Add a vertical scrollbar when the content overflows */
+  height: 320px;
+  overflow-y: auto;
+  width: 320px;
+  position: relative;
+  padding: 8px;
   display: flex;
-  flex-wrap: wrap;
-  gap: 5px;
-  padding-right: 8px; /* This will prevent the scrollbar from overlaying your chips */
+  flex-direction: column;
 }
 
 .cardContainer {
@@ -164,10 +164,6 @@ body {
   font-weight: 700;
   line-height: 22px;
   outline: none;
-}
-
-.disablePointerEvents {
-  pointer-events: none;
 }
 
 .advancedOptionsContainer::-webkit-scrollbar {
