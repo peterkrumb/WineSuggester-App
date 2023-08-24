@@ -23,6 +23,7 @@ import {
   Checkbox,
   Switch,
   Snackbar,
+  Button,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { styled } from "@mui/system";
@@ -31,13 +32,13 @@ const WineForm = () => {
   const [wineType, setWineType] = useState(null);
   const [wineVarietal, setWineVarietal] = useState(null);
   const [varietals, setVarietals] = useState([]);
-  const [generatedSentence, setGeneratedSentence] = useState([]); // Define the state to hold the generated sentence
-  const [loadingMessage, setLoadingMessage] = useState(""); // Define the state to hold the loading message while the API call is being made
+  const [generatedSentence, setGeneratedSentence] = useState([]);
+  const [loadingMessage, setLoadingMessage] = useState("");
   const [showAdvancedOptions, setShowAdvancedOptions] = useState(false);
-  const [isBodyDisabled, setIsBodyDisabled] = useState(true);
-  const [isSweetnessDisabled, setIsSweetnessDisabled] = useState(true);
+  const [isBodyDisabled, setIsBodyDisabled] = useState(false);
+  const [isSweetnessDisabled, setIsSweetnessDisabled] = useState(false);
   const [isAdvancedOptionsChecked, setIsAdvancedOptionsChecked] =
-    useState(false);
+    useState(null);
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [selectOpen, setSelectOpen] = useState(false);
 
@@ -226,9 +227,10 @@ const WineForm = () => {
     event.preventDefault();
 
     if (!wineVarietal) {
-      // Display an error message or take any appropriate action
-      console.log("Please select a varietal");
-      return; // Stop the function execution if varietal is not selected
+      // If the varietal is not selected, show an error message
+      alert("Choose a wine first");
+
+      return;
     }
 
     let prompt = `${wineVarietal}`;
@@ -363,11 +365,12 @@ const WineForm = () => {
   return (
     <div className="body">
       <main className={styles.main}>
-        <Header title="Wine Assistant" />
-        <img src={GlassWine} alt="" className={styles.icon} />
-        <h3 className={styles.h3}>
+        {/* <Header title="Wine Assistant" /> */}
+
+        {/* <img src={GlassWine} alt="" className={styles.icon} /> */}
+        {/* <h3 className={styles.h3}>
           The world's most sophisticated wine assistant
-        </h3>
+        </h3> */}
 
         <form className={styles.form} onSubmit={onSubmit}>
           <label htmlFor="wineType">Choose a wine type:</label>
@@ -405,6 +408,7 @@ const WineForm = () => {
           </div>
 
           <Slider
+            label="Price Range"
             sx={{ marginTop: "40px", marginBottom: "20px" }}
             value={priceRange}
             onChange={handlePriceChange}
@@ -416,16 +420,16 @@ const WineForm = () => {
             valueLabelFormat={(value) => `$${value}`}
           />
         </form>
-        {/* here we add a checkbox for advanced options */}
-        <div>
-          <Checkbox
-            onChange={handleAdvancedOptionsChange}
-            checked={isAdvancedOptionsChecked}
-          />
 
-          <label htmlFor="advancedOptions">
-            <span className={styles.checkboxLabel}>Advanced Options</span>
-          </label>
+        {/* rather than a checkbox, we create a button for advanced options */}
+
+        <label htmlFor="advancedOptions">
+          <span className={styles.checkboxLabel}></span>
+        </label>
+        <Button onClick={handleAdvancedOptionsChange}>Advanced Options</Button>
+        <div>
+          <Checkbox checked={isAdvancedOptionsChecked} />
+
           {showAdvancedOptions && (
             <div
               style={{
