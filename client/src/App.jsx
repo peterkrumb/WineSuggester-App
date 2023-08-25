@@ -9,6 +9,7 @@ import {
   whiteVarietals,
   sparklingVarietals,
 } from "./varietals.js";
+import cardImage from "./assets/cardBG.png";
 
 import {
   Chip,
@@ -362,6 +363,7 @@ const WineForm = () => {
   return (
     <div className="body">
       <main className={styles.main}>
+        {cardImage}
         {/* <Header title="Wine Assistant" /> */}
 
         {/* <img src={GlassWine} alt="" className={styles.icon} /> */}
@@ -405,21 +407,6 @@ const WineForm = () => {
             </div>
           </form>
 
-          <Button
-            onClick={handleAdvancedOptionsChange}
-            sx={{
-              margin: "10px 0px 0px 0px",
-              background: "linear-gradient(135deg, #2c2c2c 0%, #4a4a4a 100%)", // matte gray gradient
-              border: 0,
-              borderRadius: 3,
-              boxShadow: "0 3px 5px 2px rgba(0, 0, 0, .3)", // subtle shadow
-              color: "#f5f5f5", // off-white color for text
-              padding: "10px 20px",
-            }}
-          >
-            Advanced Options
-          </Button>
-
           {showAdvancedOptions && (
             <div
               style={{
@@ -434,16 +421,71 @@ const WineForm = () => {
               className="overlay"
             ></div>
           )}
-
           <Snackbar
             open={openSnackbar}
             autoHideDuration={1750}
             onClose={handleCloseSnackbar}
             message="Filters reset"
           />
-          <button className={styles.button} type="button" onClick={onSubmit}>
+          <Button
+            disableRipple
+            onClick={handleAdvancedOptionsChange}
+            sx={{
+              margin: "10px 0px 0px 0px",
+              background: "linear-gradient(135deg, #708090 0%, #000000 100%)",
+              "&:hover": {
+                background: "linear-gradient(135deg, #778899 0%, #191919 100%)",
+              },
+              transition: "transform 0.2s ease-in-out",
+              "&:active": {
+                transform: "scale(0.95)",
+              },
+
+              border: 0,
+              borderRadius: 5,
+              boxShadow: "0 3px 5px 2px rgba(0, 0, 0, .3)",
+              color: "#f5f5f5",
+              padding: "10px 20px",
+              textTransform: "capitalize",
+              fontFamily: "Fira Sans",
+              fontSize: 16,
+              fontWeight: 800,
+              // letterSpacing: 1.5,
+            }}
+          >
+            Advanced Options
+          </Button>
+          <Button
+            disableRipple
+            onClick={onSubmit}
+            sx={{
+              margin: "10px 0px 0px 0px",
+              background: "linear-gradient(135deg, #8B0000 0%, #4A1931 100%)",
+
+              "&:hover": {
+                background: "linear-gradient(135deg, #6E0808 0%, #2E0505 100%)",
+              },
+              transition: "transform 0.2s ease-in-out",
+              "&:active": {
+                transform: "scale(0.95)", // scales the button down to 95% of its original size
+              },
+
+              border: 0,
+              borderRadius: 5,
+              boxShadow: "0 3px 5px 2px rgba(0, 0, 0, .3)",
+              color: "#f5f5f5",
+              padding: "10px 20px",
+              textTransform: "capitalize",
+              fontFamily: "Fira Sans",
+              fontSize: 16,
+              fontWeight: 800,
+            }}
+          >
             Get Wine Recommendation
-          </button>
+          </Button>
+          {/* <button className={styles.recommendationButton} type="button" onClick={onSubmit}>
+            Get Wine Recommendation
+          </button> */}
         </div>
         <p>
           {generateSuggestion(
@@ -637,7 +679,7 @@ const WineForm = () => {
           <div className="cardContainer">
             <Card
               key={index}
-              className="suggestionCard"
+              className={styles.suggestionCard}
               style={{
                 marginBottom: "20px",
                 width: "90%",
