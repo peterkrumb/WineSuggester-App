@@ -363,7 +363,6 @@ const WineForm = () => {
   return (
     <div className="body">
       <main className={styles.main}>
-        {cardImage}
         {/* <Header title="Wine Assistant" /> */}
 
         {/* <img src={GlassWine} alt="" className={styles.icon} /> */}
