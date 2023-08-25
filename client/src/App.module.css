@@ -14,7 +14,6 @@
       format("svg");
 }
 body {
-  font-family: "Garamond Premier Pro Display";
   margin: 0;
   padding: 0;
   /* import image from assets */
@@ -30,10 +29,10 @@ body {
 
 .main,
 .main input {
-  font-size: 16px;
+  font-size: 24px;
   line-height: 24px;
   color: #353740;
-  font-family: "Source Sans Pro";
+  font-family: "Garamond Premier Pro Display";
 }
 .main {
   display: flex;
@@ -87,16 +86,17 @@ body {
 }
 
 .mainContentContainer {
-  background-color: #f4f4f4; /* This is just an example color. */
+  background: linear-gradient(135deg, #e5e5e5, #f9f9f9, #e5e5e5);
   width: 18%;
   margin: 0 auto;
   padding: 35px 20px;
   border-radius: 25px;
-  /* ... existing styles ... */
+  box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1);
+
   display: flex;
-  flex-direction: column; /* stack children vertically */
-  align-items: center; /* center children horizontally */
-  justify-content: center; /* center children vertically */
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .button:hover {
@@ -117,7 +117,7 @@ body {
 
   top: 50%;
   left: 50%;
-  width: 5%;
+  width: 80%;
   margin: 0;
   background: linear-gradient(135deg, #1a1a1a 0%, #2e2e2e 100%);
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
@@ -135,11 +135,6 @@ body {
   .advancedOptionsContainer {
     padding: 20px 30px;
     width: 80%;
-  }
-}
-@media (max-width: 600px) {
-  .main h3 {
-    font-size: 24px;
   }
 }
 
@@ -286,24 +281,29 @@ body {
     padding: 8px 16px;
     font-size: 0.8em;
   }
-}
-
-@media (max-width: 600px) {
   .cardContainer {
     flex-direction: column;
   }
-}
-
-@media (max-width: 600px) {
   .childContainer {
     height: auto;
     max-height: 70vh;
   }
-}
-
-@media (max-width: 600px) {
   .headerIcon {
     width: 70px;
     height: 70px;
+  }
+  .mainContentContainer {
+    width: 90%;
+  }
+  .advancedOptionsContainer {
+    width: 90%;
+    max-width: none;
+  }
+}
+
+@media (min-width: 601px) and (max-width: 1024px) {
+  /* This targets screens larger than mobile but smaller than large desktops */
+  .mainContentContainer {
+    width: 50%; /* Adjust this value as needed */
   }
 }

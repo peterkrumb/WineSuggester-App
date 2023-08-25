@@ -34,12 +34,10 @@ const WineForm = () => {
   const [showAdvancedOptions, setShowAdvancedOptions] = useState(false);
   const [isBodyDisabled, setIsBodyDisabled] = useState(false);
   const [isSweetnessDisabled, setIsSweetnessDisabled] = useState(false);
-  const [isAdvancedOptionsChecked, setIsAdvancedOptionsChecked] =
-    useState(null);
-  const [openSnackbar, setOpenSnackbar] = useState(false);
-  const [selectOpen, setSelectOpen] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
 
-  const [priceRange, setPriceRange] = useState([0, 250]);
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [priceRange, setPriceRange] = useState([0, 500]);
 
   const levels = [
     "light",
@@ -49,8 +47,8 @@ const WineForm = () => {
     "full",
   ];
   const sweetnessLevels = ["dry", "semi-sweet", "sweet", "dessert"];
-  const [value, setValue] = useState(2);
-  const [sweetnessValue, setSweetnessValue] = useState(2);
+  const [value, setValue] = useState(null);
+  const [sweetnessValue, setSweetnessValue] = useState(null);
 
   const wineTypeOptions = [
     { value: "red", label: "Red" },
@@ -218,50 +216,46 @@ const WineForm = () => {
 
   const handleAdvancedOptionsChange = (e) => {
     setShowAdvancedOptions((prev) => !prev);
+    if (sweetnessValue === null && !isSweetnessDisabled) {
+      setSweetnessValue(2); // set to sweet if not set before
+    }
+    if (value === null && !isBodyDisabled) {
+      setValue(2);
+    }
   };
 
-  const onSubmit = async (event) => {
-    event.preventDefault();
-
+  const validateForm = () => {
     if (!wineVarietal) {
-      // If the varietal is not selected, show an error message
-      alert("Choose a wine first");
-
-      return;
+      setAlertMessage("Choose a wine first");
+      return false;
     }
+    return true;
+  };
 
+  const constructPrompt = () => {
     let prompt = `${wineVarietal}`;
 
-    // Check body state and append if not in its default state
     if (!isBodyDisabled) {
       prompt += ` with a body of ${levels[value]}`;
     }
-
-    // Check sweetness state and append if not in its default state
     if (!isSweetnessDisabled) {
       prompt += ` and a sweetness level of ${sweetnessLevels[sweetnessValue]}`;
     }
-
-    // Check flavors state and append if any flavors are selected
     const flavors = getSelectedOptions();
     if (flavors) {
       prompt += ` with flavors of ${flavors}`;
     }
-
-    // Check price range state and append if it's not in its default range
     if (priceRange[0] > 0 || priceRange[1] < 250) {
       prompt += ` within a price range of $${priceRange[0]} to $${priceRange[1]}`;
     }
 
-    console.log("Prompt: ", prompt);
-    const url = "https://dry-sea-76064-c9baeed38795.herokuapp.com/generate";
-    setLoadingMessage();
+    return prompt;
+  };
 
+  const fetchWineRecommendations = async (prompt) => {
+    const url = "https://dry-sea-76064-c9baeed38795.herokuapp.com/generate";
     try {
       const response = await axios.post(url, { queryDescription: prompt });
-
-      console.log("Raw Response: ", response.data.response);
-
       const responseSentences = response.data.response.split("\n");
 
       let wineObjects = [];
@@ -293,12 +287,30 @@ const WineForm = () => {
       console.log("Wine Recommendations: ", wineObjects);
       setGeneratedSentence(wineObjects);
       setLoadingMessage("");
+      return wineObjects;
     } catch (error) {
       console.error("Error:", error);
-      setLoadingMessage(
-        "Wine Assistant is Thinking (This may take up to 30 seconds)."
-      );
+      return [];
+    } finally {
+      setLoadingMessage("");
     }
+  };
+
+  const onSubmit = async (event) => {
+    event.preventDefault();
+
+    if (!validateForm()) {
+      return;
+    }
+
+    const prompt = constructPrompt();
+
+    console.log("Prompt: ", prompt);
+    setLoadingMessage(
+      "Wine Assistant is Thinking (This may take up to 30 seconds)."
+    );
+    const recommendations = await fetchWineRecommendations(prompt);
+    setGeneratedSentence(recommendations);
   };
 
   const handleChange = (e, newValue) => {
@@ -310,11 +322,11 @@ const WineForm = () => {
   };
 
   const toggleBody = () => {
-    setIsBodyDisabled((prevState) => !prevState); // Toggle the value of isBodyDisabled
+    setIsBodyDisabled((prevState) => !prevState);
   };
 
   const toggleSweetness = () => {
-    setIsSweetnessDisabled((prevState) => !prevState); // Toggle the value of isBodyDisabled
+    setIsSweetnessDisabled((prevState) => !prevState);
   };
 
   // Filter through the options array, determines if the flavor was selected or not, and returns them separated by commas for "generateSuggestion"
@@ -347,18 +359,6 @@ const WineForm = () => {
     setPriceRange(newValue);
   };
 
-  // Effect to update the checkbox state when parameters or options change
-  useEffect(() => {
-    // Check if any parameter or option is not in its default state
-    const anyChange =
-      !isBodyDisabled ||
-      !isSweetnessDisabled ||
-      options.some((option) => option.selected);
-
-    // Update the checkbox state accordingly
-    setIsAdvancedOptionsChecked(anyChange);
-  }, [isBodyDisabled, isSweetnessDisabled, options]);
-
   return (
     <div className="body">
       <main className={styles.main}>
@@ -371,7 +371,7 @@ const WineForm = () => {
         <div className={styles.mainContentContainer}>
           <form className={styles.form} onSubmit={onSubmit}>
             <label htmlFor="wineType">Choose a wine type:</label>
-            <div style={{ zIndex: 1001, cursor: "pointer" }}>
+            <div style={{ zIndex: 1001 }}>
               <Select
                 id="wineType"
                 name="wineType"
@@ -476,16 +476,33 @@ const WineForm = () => {
             <h4>Price</h4>
             <Slider
               label="Price Range"
-              sx={{ marginTop: "40px", marginBottom: "20px", width: "300px" }}
+              sx={{ marginTop: "0px", marginBottom: "20px", width: "300px" }}
               value={priceRange}
               onChange={handlePriceChange}
               valueLabelDisplay="auto"
               min={0}
-              max={200}
+              max={500}
               step={5}
               marks
-              valueLabelFormat={(value) => `$${value}`}
+              valueLabelFormat={(value) =>
+                value === 500 ? "$500+" : `$${value}`
+              }
             />
+            <input
+              type="number"
+              value={priceRange[0]}
+              onChange={(e) =>
+                setPriceRange([Number(e.target.value), priceRange[1]])
+              }
+            />
+            <input
+              type="number"
+              value={priceRange[1]}
+              onChange={(e) =>
+                setPriceRange([priceRange[0], Number(e.target.value)])
+              }
+            />
+            <br />
             <br />
             <Switch onChange={toggleBody} checked={!isBodyDisabled} />
             <h4>Body</h4>
@@ -591,7 +608,8 @@ const WineForm = () => {
                     style={{
                       backgroundColor: option.color,
                       color: option.textColor,
-                      fontFamily: "source sans pro, sans-serif",
+                      fontFamily: "Garamond Premier Pro Display",
+                      fontSize: "20px",
                     }}
                   />
                 ))}
@@ -607,6 +625,12 @@ const WineForm = () => {
             </button>
           </div>
         )}
+        <Snackbar
+          open={!!alertMessage}
+          autoHideDuration={6000}
+          onClose={() => setAlertMessage("")}
+          message={alertMessage}
+        />
 
         <p>{loadingMessage}</p>
         {generatedSentence.map((wine, index) => (
@@ -616,8 +640,8 @@ const WineForm = () => {
               className="suggestionCard"
               style={{
                 marginBottom: "20px",
-                width: "90%", // Use a relative width
-                maxWidth: "1000px", // Set a maximum width
+                width: "90%",
+                maxWidth: "1000px",
                 margin: "10px",
               }}
             >
