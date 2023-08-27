@@ -1,6 +1,6 @@
 @import url(https://db.onlinewebfonts.com/c/03cbeb913835a1cc045d31bd91168ffd?family=Garamond+Premier+Pro+Display);
-@import url("https://fonts.googleapis.com/css2?family=Lato&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Fira+Sans&family=Lato&display=swap");
+
+@import url("https://fonts.googleapis.com/css2?family=Alegreya&family=Fira+Sans&family=Lato&display=swap");
 @font-face {
   font-family: "Garamond Premier Pro Display";
   src: url("https://db.onlinewebfonts.com/t/03cbeb913835a1cc045d31bd91168ffd.eot");
@@ -112,10 +112,19 @@ body {
 }
 
 .suggestionCard {
-  background: url("./assets/BG3.png");
-  /* background-position: center center; 
-  background-repeat: no-repeat; 
-  background-size: cover; */
+  background: url("./assets/cardBG3.png");
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: cover;
+
+  margin-bottom: 20px;
+  width: 90%;
+  max-width: 1000px;
+  margin: 10px;
+
+  border: 1px solid #dcdcdc; /* light grey border */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* subtle shadow */
+  border-radius: 10px; /* rounded corners */
 }
 
 .advancedOptionsContainer {

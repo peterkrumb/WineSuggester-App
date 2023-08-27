@@ -680,22 +680,77 @@ const WineForm = () => {
               key={index}
               className={styles.suggestionCard}
               style={{
-                marginBottom: "20px",
-                width: "90%",
-                maxWidth: "1000px",
-                margin: "10px",
+                boxShadow: "0 4px 8px rgba(0, 0, 0, 0.5)",
+                borderRadius: 17,
               }}
             >
               <CardContent>
-                <Typography variant="h5">{wine.name}</Typography>
-                <Typography color="textSecondary">
-                  <strong>Price:</strong> {wine.price}
+                <Typography
+                  style={{
+                    fontFamily: "Alegreya",
+                    color: "#333",
+                    fontSize: "1.5em",
+                  }}
+                  variant="h5"
+                >
+                  <span
+                    style={{
+                      background: "rgba(255, 255, 255, 0.6)",
+                      padding: "4px 10px 10px 10px",
+                      borderRadius: "15px",
+                      boxShadow: "2px 2px 5px rgba(0, 0, 0, 0.2)",
+                    }}
+                  >
+                    {wine.name}
+                  </span>
+                  <hr />
                 </Typography>
-                <Typography>
-                  <strong>Description:</strong> {wine.description}
+                <Typography
+                  style={{
+                    fontFamily: "Alegreya",
+                    color: "#333",
+                    fontSize: ".9em",
+                    background: "rgba(255, 255, 255, 0.6)",
+                    padding: "10px",
+                    // borderRadius: "5px",
+                    boxShadow: "2px 2px 5px rgba(0, 0, 0, 0.2)",
+                    borderTopLeftRadius: "25px",
+                    borderTopRightRadius: "25px",
+                  }}
+                >
+                  <span>Price:</span> {wine.price}
                 </Typography>
-                <Typography>
-                  <strong>Reason:</strong> {wine.reason}
+                <Typography
+                  style={{
+                    fontFamily: "Alegreya",
+                    // fontWeight: 700,
+
+                    fontSize: ".7em",
+                    color: "#333",
+                    background: "rgba(255, 255, 255, 0.6)",
+                    padding: "10px",
+                    // border: "1px solid #333",
+                    boxShadow: "2px 2px 5px rgba(0, 0, 0, 0.5)",
+                    textShadow: "2px 2px 5px #aaa",
+                  }}
+                >
+                  <span>Description:</span> {wine.description}
+                </Typography>
+                <Typography
+                  style={{
+                    fontFamily: "Alegreya",
+                    color: "#333",
+                    fontSize: ".7em",
+                    // fontWeight: 700,
+                    background: "rgba(255, 255, 255, 0.6)",
+                    padding: "10px",
+                    // borderRadius: "5px",
+                    boxShadow: "2px 2px 5px rgba(0, 0, 0, 0.2)",
+                    borderBottomLeftRadius: "25px",
+                    borderBottomRightRadius: "25px",
+                  }}
+                >
+                  <span>Reason:</span> {wine.reason}
                 </Typography>
               </CardContent>
             </Card>
