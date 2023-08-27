@@ -9,7 +9,6 @@ import {
   whiteVarietals,
   sparklingVarietals,
 } from "./varietals.js";
-import cardImage from "./assets/cardBG.png";
 
 import {
   Chip,
@@ -216,6 +215,7 @@ const WineForm = () => {
   ]);
 
   const handleAdvancedOptionsChange = (e) => {
+    console.log("handleAdvancedOptionsChange called");
     setShowAdvancedOptions((prev) => !prev);
     if (sweetnessValue === null && !isSweetnessDisabled) {
       setSweetnessValue(2); // set to sweet if not set before
@@ -223,6 +223,7 @@ const WineForm = () => {
     if (value === null && !isBodyDisabled) {
       setValue(2);
     }
+    console.log(showAdvancedOptions);
   };
 
   const validateForm = () => {
@@ -364,7 +365,6 @@ const WineForm = () => {
     <div className="body">
       <main className={styles.main}>
         {/* <Header title="Wine Assistant" /> */}
-
         {/* <img src={GlassWine} alt="" className={styles.icon} /> */}
         {/* <h3 className={styles.h3}>
           The world's most sophisticated wine assistant
@@ -372,7 +372,7 @@ const WineForm = () => {
         <div className={styles.mainContentContainer}>
           <form className={styles.form} onSubmit={onSubmit}>
             <label htmlFor="wineType">Choose a wine type:</label>
-            <div style={{ zIndex: 1001 }}>
+            <div>
               <Select
                 id="wineType"
                 name="wineType"
@@ -388,7 +388,7 @@ const WineForm = () => {
             <br />
 
             <label htmlFor="wineVarietal">Choose a wine varietal:</label>
-            <div style={{ zIndex: 1000 }}>
+            <div>
               <Select
                 id="wineVarietal"
                 name="wineVarietal"
@@ -406,7 +406,7 @@ const WineForm = () => {
             </div>
           </form>
 
-          {showAdvancedOptions && (
+          {/* {showAdvancedOptions && (
             <div
               style={{
                 position: "fixed",
@@ -419,7 +419,7 @@ const WineForm = () => {
               }}
               className="overlay"
             ></div>
-          )}
+          )} */}
           <Snackbar
             open={openSnackbar}
             autoHideDuration={1750}
@@ -499,263 +499,266 @@ const WineForm = () => {
             getSelectedOptions
           )}
         </p>
+        {/* {showAdvancedOptions && ( */}
+        <div
+          className={`${styles.advancedOptionsContainer} ${
+            showAdvancedOptions ? styles.open : ""
+          }`}
+          style={{ maxHeight: showAdvancedOptions ? "70vh" : "0vh" }}
+        >
+          <h3>Filter</h3>
+          <CloseIcon
+            className={styles.closeIcon}
+            onClick={() => {
+              handleAdvancedOptionsChange();
+            }}
+            sx={{
+              fontSize: "2.1em",
+            }}
+          />
+          <h4>Price</h4>
+          <Slider
+            label="Price Range"
+            sx={{ marginTop: "0px", marginBottom: "20px", width: "300px" }}
+            value={priceRange}
+            onChange={handlePriceChange}
+            valueLabelDisplay="auto"
+            min={0}
+            max={500}
+            step={5}
+            marks
+            valueLabelFormat={(value) =>
+              value === 500 ? "$500+" : `$${value}`
+            }
+          />
+          <input
+            type="number"
+            value={priceRange[0]}
+            onChange={(e) =>
+              setPriceRange([Number(e.target.value), priceRange[1]])
+            }
+          />
+          <input
+            type="number"
+            value={priceRange[1]}
+            onChange={(e) =>
+              setPriceRange([priceRange[0], Number(e.target.value)])
+            }
+          />
+          <br />
+          <br />
+          <Switch onChange={toggleBody} checked={!isBodyDisabled} />
+          <h4>Body</h4>
+          <Slider
+            aria-label="Body"
+            disabled={isBodyDisabled}
+            sx={{
+              width: 300,
+            }}
+            defaultValue={2}
+            aria-labelledby="discrete-slider"
+            size="large"
+            step={1}
+            marks
+            min={0}
+            max={4}
+            value={value}
+            onChange={handleChange}
+            valueLabelFormat={(val) => levels[val]}
+          />
+          {!isBodyDisabled && <div>{levels[value]}</div>} <br />
+          {/* </div> */}
+          <Switch onChange={toggleSweetness} checked={!isSweetnessDisabled} />
+          <h4>Sweetness</h4>
+          <Slider
+            disabled={isSweetnessDisabled}
+            sx={{
+              width: 300,
+            }}
+            defaultValue={2}
+            aria-labelledby="discrete-slider"
+            size="large"
+            step={1}
+            marks
+            min={0}
+            max={3}
+            value={sweetnessValue}
+            onChange={handleSweetnessChange}
+            valueLabelFormat={(val) => sweetnessLevels[val]}
+          />
+          {!isSweetnessDisabled && <div>{sweetnessLevels[sweetnessValue]}</div>}
+          <br />
+          <div>
+            <Paper
+              sx={{
+                height: "150px",
+                overflowY: "auto",
+                width: "320px",
+                position: "relative",
+                padding: "8px",
+                display: "flex",
+                flexDirection: "column",
+              }}
+            >
+              <div>
+                {options.length > 0 && (
+                  <Chip
+                    label="Clear All"
+                    onClick={handleClearAllChips}
+                    color="primary"
+                    style={{ fontFamily: "source sans pro, sans-serif" }}
+                  />
+                )}
+              </div>
 
-        {showAdvancedOptions && (
-          <div className={styles.advancedOptionsContainer}>
-            <h3>Filter</h3>
-            <CloseIcon
-              onClick={() => {
-                handleAdvancedOptionsChange();
-              }}
-              sx={{
-                position: "absolute",
-                top: "20px", // Adjust this as needed
-                right: "20px", // Adjust this as needed
-                cursor: "pointer",
-              }}
-            />
-            <h4>Price</h4>
-            <Slider
-              label="Price Range"
-              sx={{ marginTop: "0px", marginBottom: "20px", width: "300px" }}
-              value={priceRange}
-              onChange={handlePriceChange}
-              valueLabelDisplay="auto"
-              min={0}
-              max={500}
-              step={5}
-              marks
-              valueLabelFormat={(value) =>
-                value === 500 ? "$500+" : `$${value}`
-              }
-            />
-            <input
-              type="number"
-              value={priceRange[0]}
-              onChange={(e) =>
-                setPriceRange([Number(e.target.value), priceRange[1]])
-              }
-            />
-            <input
-              type="number"
-              value={priceRange[1]}
-              onChange={(e) =>
-                setPriceRange([priceRange[0], Number(e.target.value)])
-              }
-            />
-            <br />
-            <br />
-            <Switch onChange={toggleBody} checked={!isBodyDisabled} />
-            <h4>Body</h4>
-            <Slider
-              aria-label="Body"
-              disabled={isBodyDisabled}
-              sx={{
-                width: 300,
-              }}
-              defaultValue={2}
-              aria-labelledby="discrete-slider"
-              size="large"
-              step={1}
-              marks
-              min={0}
-              max={4}
-              value={value}
-              onChange={handleChange}
-              valueLabelFormat={(val) => levels[val]}
-            />
-            {!isBodyDisabled && <div>{levels[value]}</div>} <br />
-            {/* </div> */}
-            <Switch onChange={toggleSweetness} checked={!isSweetnessDisabled} />
-            <h4>Sweetness</h4>
-            <Slider
-              disabled={isSweetnessDisabled}
-              sx={{
-                width: 300,
-              }}
-              defaultValue={2}
-              aria-labelledby="discrete-slider"
-              size="large"
-              step={1}
-              marks
-              min={0}
-              max={3}
-              value={sweetnessValue}
-              onChange={handleSweetnessChange}
-              valueLabelFormat={(val) => sweetnessLevels[val]}
-            />
-            {!isSweetnessDisabled && (
-              <div>{sweetnessLevels[sweetnessValue]}</div>
-            )}
-            <br />
-            <div>
-              <Paper
+              <div
                 sx={{
-                  height: "150px",
-                  overflowY: "auto",
-                  width: "320px",
-                  position: "relative",
-                  padding: "8px",
                   display: "flex",
-                  flexDirection: "column",
+                  flexWrap: "wrap",
+                  alignItems: "flex-start",
                 }}
-              >
-                <div>
-                  {options.length > 0 && (
-                    <Chip
-                      label="Clear All"
-                      onClick={handleClearAllChips}
-                      color="primary"
-                      style={{ fontFamily: "source sans pro, sans-serif" }}
-                    />
-                  )}
-                </div>
-
-                <div
-                  sx={{
-                    display: "flex",
-                    flexWrap: "wrap",
-                    alignItems: "flex-start",
-                  }}
-                ></div>
-                {options
-                  .filter((option) => option.selected)
-                  .map((option, index) => (
-                    <StyledChip
-                      key={index}
-                      label={option.label}
-                      onDelete={() => handleRemoveOption(option)}
-                      color="primary"
-                      style={{
-                        backgroundColor: option.color,
-                        margin: "4px",
-                        fontFamily: "source sans pro, sans-serif",
-                      }}
-                    />
-                  ))}
-              </Paper>
-              <br />
-              <h3>Notes</h3>
-            </div>
-            <div className={styles.childContainer}>
+              ></div>
               {options
-                .filter((option) => !option.selected)
+                .filter((option) => option.selected)
                 .map((option, index) => (
                   <StyledChip
                     key={index}
                     label={option.label}
-                    clickable
-                    onClick={() => handleAddOption(option)}
+                    onDelete={() => handleRemoveOption(option)}
+                    color="primary"
                     style={{
                       backgroundColor: option.color,
-                      color: option.textColor,
-                      fontFamily: "Garamond Premier Pro Display",
-                      fontSize: "20px",
+                      margin: "4px",
+                      fontFamily: "source sans pro, sans-serif",
                     }}
                   />
                 ))}
-            </div>
-            <button className={styles.clearBtn} onClick={handleClearAll}>
-              Clear All
-            </button>
-            <button
-              className={styles.applyFilterBtn}
-              onClick={handleAdvancedOptionsChange}
-            >
-              Apply Filter
-            </button>
+            </Paper>
+            <br />
+            <h3>Notes</h3>
           </div>
-        )}
+          <div className={styles.childContainer}>
+            {options
+              .filter((option) => !option.selected)
+              .map((option, index) => (
+                <StyledChip
+                  key={index}
+                  label={option.label}
+                  clickable
+                  onClick={() => handleAddOption(option)}
+                  style={{
+                    backgroundColor: option.color,
+                    color: option.textColor,
+                    fontFamily: "Garamond Premier Pro Display",
+                    fontSize: "20px",
+                  }}
+                />
+              ))}
+          </div>
+          <button className={styles.clearBtn} onClick={handleClearAll}>
+            Clear All
+          </button>
+          <button
+            className={styles.applyFilterBtn}
+            onClick={handleAdvancedOptionsChange}
+          >
+            Apply Filter
+          </button>
+        </div>
+
         <Snackbar
           open={!!alertMessage}
           autoHideDuration={6000}
           onClose={() => setAlertMessage("")}
           message={alertMessage}
         />
-
         <p>{loadingMessage}</p>
-        {generatedSentence.map((wine, index) => (
-          <div className="cardContainer">
-            <Card
-              key={index}
-              className={styles.suggestionCard}
-              style={{
-                boxShadow: "0 4px 8px rgba(0, 0, 0, 0.5)",
-                borderRadius: 17,
-              }}
-            >
-              <CardContent>
-                <Typography
-                  style={{
-                    fontFamily: "Alegreya",
-                    color: "#333",
-                    fontSize: "1.5em",
-                  }}
-                  variant="h5"
-                >
-                  <span
+        <div className={styles.cardBox}>
+          {generatedSentence.map((wine, index) => (
+            <div className={styles.cardContainer}>
+              <Card
+                key={index}
+                className={styles.suggestionCard}
+                style={{
+                  boxShadow: "0 4px 8px rgba(0, 0, 0, 0.5)",
+                  borderRadius: 17,
+                }}
+              >
+                <CardContent>
+                  <Typography
                     style={{
+                      fontFamily: "Alegreya",
+                      color: "#333",
+                      fontSize: "1.5em",
+                    }}
+                    variant="h5"
+                  >
+                    <span
+                      style={{
+                        background: "rgba(255, 255, 255, 0.6)",
+                        padding: "4px 10px 10px 10px",
+                        borderRadius: "15px",
+                        boxShadow: "2px 2px 5px rgba(0, 0, 0, 0.2)",
+                        textShadow:
+                          "0px 3px 0px #b2a98f, 0px 14px 10px rgba(0,0,0,0.15), 0px 24px 2px rgba(0,0,0,0.1),  0px 34px 30px rgba(0,0,0,0.1)",
+                      }}
+                    >
+                      {wine.name}
+                    </span>
+                    <hr />
+                  </Typography>
+                  <Typography
+                    style={{
+                      fontFamily: "Alegreya",
+                      color: "#333",
+                      fontSize: ".9em",
                       background: "rgba(255, 255, 255, 0.6)",
-                      padding: "4px 10px 10px 10px",
-                      borderRadius: "15px",
+                      padding: "10px",
+                      // borderRadius: "5px",
                       boxShadow: "2px 2px 5px rgba(0, 0, 0, 0.2)",
+                      borderTopLeftRadius: "25px",
+                      borderTopRightRadius: "25px",
                     }}
                   >
-                    {wine.name}
-                  </span>
-                  <hr />
-                </Typography>
-                <Typography
-                  style={{
-                    fontFamily: "Alegreya",
-                    color: "#333",
-                    fontSize: ".9em",
-                    background: "rgba(255, 255, 255, 0.6)",
-                    padding: "10px",
-                    // borderRadius: "5px",
-                    boxShadow: "2px 2px 5px rgba(0, 0, 0, 0.2)",
-                    borderTopLeftRadius: "25px",
-                    borderTopRightRadius: "25px",
-                  }}
-                >
-                  <span>Price:</span> {wine.price}
-                </Typography>
-                <Typography
-                  style={{
-                    fontFamily: "Alegreya",
-                    // fontWeight: 700,
+                    <span>Price:</span> {wine.price}
+                  </Typography>
+                  <Typography
+                    style={{
+                      fontFamily: "Alegreya",
+                      // fontWeight: 700,
 
-                    fontSize: ".7em",
-                    color: "#333",
-                    background: "rgba(255, 255, 255, 0.6)",
-                    padding: "10px",
-                    // border: "1px solid #333",
-                    boxShadow: "2px 2px 5px rgba(0, 0, 0, 0.5)",
-                    textShadow: "2px 2px 5px #aaa",
-                  }}
-                >
-                  <span>Description:</span> {wine.description}
-                </Typography>
-                <Typography
-                  style={{
-                    fontFamily: "Alegreya",
-                    color: "#333",
-                    fontSize: ".7em",
-                    // fontWeight: 700,
-                    background: "rgba(255, 255, 255, 0.6)",
-                    padding: "10px",
-                    // borderRadius: "5px",
-                    boxShadow: "2px 2px 5px rgba(0, 0, 0, 0.2)",
-                    borderBottomLeftRadius: "25px",
-                    borderBottomRightRadius: "25px",
-                  }}
-                >
-                  <span>Reason:</span> {wine.reason}
-                </Typography>
-              </CardContent>
-            </Card>
-          </div>
-        ))}
+                      fontSize: ".7em",
+                      color: "#333",
+                      background: "rgba(255, 255, 255, 0.6)",
+                      padding: "10px",
+                      // border: "1px solid #333",
+                      boxShadow: "2px 2px 5px rgba(0, 0, 0, 0.5)",
+                      textShadow: "2px 2px 5px #aaa",
+                    }}
+                  >
+                    <span>Description:</span> {wine.description}
+                  </Typography>
+                  <Typography
+                    style={{
+                      fontFamily: "Alegreya",
+                      color: "#333",
+                      fontSize: ".7em",
+                      // fontWeight: 700,
+                      background: "rgba(255, 255, 255, 0.6)",
+                      padding: "10px",
+                      // borderRadius: "5px",
+                      boxShadow: "2px 2px 5px rgba(0, 0, 0, 0.2)",
+                      borderBottomLeftRadius: "25px",
+                      borderBottomRightRadius: "25px",
+                    }}
+                  >
+                    <span>Reason:</span> {wine.reason}
+                  </Typography>
+                </CardContent>
+              </Card>
+            </div>
+          ))}
+        </div>
       </main>
     </div>
   );

@@ -42,10 +42,7 @@ body {
   align-items: center;
   margin-top: 150px;
 }
-.main .icon {
-  width: 200px;
-  height: 200px;
-}
+
 .main h3 {
   color: #f5f5f5;
   font-size: 32px;
@@ -94,7 +91,6 @@ body {
   padding: 35px 20px;
   border-radius: 25px;
   box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1);
-
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -103,7 +99,7 @@ body {
 
 .button:hover {
   background-color: #660015;
-} /* Darker burgundy color */
+}
 
 .button:active {
   background-color: #660015;
@@ -111,17 +107,19 @@ body {
   transform: translateY(4px);
 }
 
+.cardBox {
+  margin-top: -90px;
+}
+
 .suggestionCard {
   background: url("./assets/cardBG3.png");
   background-position: center center;
   background-repeat: no-repeat;
   background-size: cover;
-
   margin-bottom: 20px;
   width: 90%;
   max-width: 1000px;
   margin: 10px;
-
   border: 1px solid #dcdcdc; /* light grey border */
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* subtle shadow */
   border-radius: 10px; /* rounded corners */
@@ -130,24 +128,32 @@ body {
 .advancedOptionsContainer {
   padding: 20px 5%;
   position: relative;
-  z-index: 1002;
   color: #f5f5f5;
-
-  top: 50%;
+  top: -110px;
   left: 50%;
   width: 80%;
-  margin: 0;
-  background: linear-gradient(135deg, #1a1a1a 0%, #2e2e2e 100%);
+  background: url("./assets/BG5.png");
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-  border-radius: 24px;
+  border-radius: 34px;
   border: 1px solid rgba(255, 255, 255, 0.1);
   box-sizing: border-box;
   transform: translate(-50%, -50%);
   overflow-y: auto;
-  max-height: 80vh;
+  max-height: 70vh;
   max-width: 60vh;
   align-self: flex-start;
-  transition: all 0.3s ease-in-out;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease-in-out, visibility 0.2s ease-in-out;
+  background-position: center center; /* Center the image */
+  /* background-repeat: no-repeat; Do not repeat the image */
+  background-size: cover; /* Resize the background image to cover the entire container */
+  /* background-attachment: fixed; Background image does not scroll with the page */
+}
+
+.advancedOptionsContainer.open {
+  opacity: 1;
+  visibility: visible;
 }
 
 @media (min-width: 768px) {
@@ -180,6 +186,14 @@ body {
   height: 102px;
   background-color: #282828;
   position: relative;
+}
+
+.closeIcon {
+  position: absolute;
+  top: 25px;
+  right: 25px;
+  cursor: pointer;
+  font-size: 24px;
 }
 
 .applyFilterBtn,
@@ -305,7 +319,7 @@ padding: 10px 20px;
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: -1; /* Place the overlay behind the content */
+
   opacity: 0.5;
 }
 
