@@ -3,6 +3,7 @@ import Select from "react-select";
 import axios from "axios";
 import { generateSuggestion } from "./components/suggestionGenerator";
 import { useState, useEffect } from "react";
+import { createTheme, ThemeProvider } from "@mui/system";
 
 import {
   redVarietals,
@@ -46,6 +47,19 @@ const WineForm = () => {
     "medium-to-full",
     "full",
   ];
+  const theme = createTheme({
+    components: {
+      MuiSlider: {
+        styleOverrides: {
+          root: {
+            margin: 0,
+            padding: "0 0 0 0",
+          },
+        },
+      },
+    },
+  });
+
   const sweetnessLevels = ["dry", "semi-sweet", "sweet", "dessert"];
   const [value, setValue] = useState(null);
   const [sweetnessValue, setSweetnessValue] = useState(null);
@@ -519,7 +533,7 @@ const WineForm = () => {
           <h4>Price</h4>
           <Slider
             label="Price Range"
-            sx={{ marginTop: "0px", marginBottom: "20px", width: "300px" }}
+            sx={{ marginTop: "0px", marginBottom: "20px", width: "400px" }}
             value={priceRange}
             onChange={handlePriceChange}
             valueLabelDisplay="auto"
