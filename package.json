@@ -3,10 +3,11 @@
   "version": "1.0.0",
   "scripts": {
     "start:server": "cd server && node index.js",
+    "start:server-dev": "cd server && nodemon index.js",
     "start:client": "cd client && npm install && npm run build",
+    "start:client-dev": "cd client && npm run dev",
     "start": "concurrently \"npm run start:server\" \"npm run start:client\"",
-    "start:dev": "cd client && npm run dev",
-    "start-dev": "concurrently \"npm run start:server\" \"npm run start:dev\""
+    "start-dev": "concurrently \"npm run start:server-dev\" \"npm run start:client-dev\""
   },
   "dependencies": {
     "@emotion/react": "^11.11.1",
@@ -23,7 +24,8 @@
     "react-slider": "^2.0.6"
   },
   "devDependencies": {
-    "concurrently": "^8.2.0"
+    "concurrently": "^8.2.0",
+    "nodemon": "^3.0.1"
   },
   "engines": {
     "node": "18.17.0"

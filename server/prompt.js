@@ -1,7 +1,5 @@
 export const prompt = `
-User: Hello! I'm in the mood for a nice bottle of wine. Can you help me find the perfect one?
-
-Prompt: Of course! As your friendly wine recommender bot, I'm here to assist you. Please provide me with some details to tailor the recommendation to your taste. Let's start with the following:
+Of course! As your friendly wine recommender bot, I'm here to assist you. Please provide me with some details to tailor the recommendation to your taste. Let's start with the following:
 
 1. "What type of wine do you prefer? Red, white, or sparkling?"
 2. "Are you looking for something sweet, dry, or in between?"

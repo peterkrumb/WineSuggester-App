@@ -3,7 +3,6 @@ import Select from "react-select";
 import axios from "axios";
 import { generateSuggestion } from "./components/suggestionGenerator";
 import { useState, useEffect } from "react";
-import { createTheme, ThemeProvider } from "@mui/system";
 
 import {
   redVarietals,
@@ -18,7 +17,6 @@ import {
   Typography,
   Card,
   Slider,
-  Checkbox,
   Switch,
   Snackbar,
   Button,
@@ -31,14 +29,17 @@ const WineForm = () => {
   const [wineVarietal, setWineVarietal] = useState(null);
   const [varietals, setVarietals] = useState([]);
   const [generatedSentence, setGeneratedSentence] = useState([]);
-  const [loadingMessage, setLoadingMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const [showAdvancedOptions, setShowAdvancedOptions] = useState(false);
   const [isBodyDisabled, setIsBodyDisabled] = useState(false);
   const [isSweetnessDisabled, setIsSweetnessDisabled] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
+  const [loadingMessage, setLoadingMessage] = useState("");
 
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [priceRange, setPriceRange] = useState([0, 500]);
+  const [value, setValue] = useState(null);
+  const [sweetnessValue, setSweetnessValue] = useState(null);
 
   const levels = [
     "light",
@@ -47,22 +48,8 @@ const WineForm = () => {
     "medium-to-full",
     "full",
   ];
-  const theme = createTheme({
-    components: {
-      MuiSlider: {
-        styleOverrides: {
-          root: {
-            margin: 0,
-            padding: "0 0 0 0",
-          },
-        },
-      },
-    },
-  });
 
   const sweetnessLevels = ["dry", "semi-sweet", "sweet", "dessert"];
-  const [value, setValue] = useState(null);
-  const [sweetnessValue, setSweetnessValue] = useState(null);
 
   const wineTypeOptions = [
     { value: "red", label: "Red" },
@@ -79,21 +66,20 @@ const WineForm = () => {
     } else if (selectedOption.value === "spumante") {
       setVarietals(sparklingVarietals);
     }
-    setWineVarietal(null); // Reset the selected varietal when wine type changes
+    setWineVarietal(null);
   };
 
   const handleVarietalChange = (selectedOption) => {
-    const selectedVarietal = selectedOption ? selectedOption.value : null; // If the selected option is null, set the varietal to null
+    const selectedVarietal = selectedOption ? selectedOption.value : null;
     setWineVarietal(selectedVarietal);
   };
 
   useEffect(() => {
-    if (loadingMessage === "") {
+    if (!isLoading) {
       return;
     }
 
     const timerId = setInterval(() => {
-      //
       setLoadingMessage((prevMessage) => {
         if (!prevMessage)
           return "Wine Companion is thinking (This may take up to 30 seconds).";
@@ -105,11 +91,10 @@ const WineForm = () => {
           return "Wine Companion is thinking (This may take up to 30 seconds).";
         }
       });
-    }, 250); // Update every quarter-second
+    }, 500);
 
-    // Clean up the timer when the component is unmounted, or when loadingMessage changes
     return () => clearInterval(timerId);
-  }, [loadingMessage]);
+  }, [isLoading]);
 
   const StyledChip = styled(Chip)(({ theme }) => ({
     margin: theme.spacing(0.5),
@@ -278,8 +263,7 @@ const WineForm = () => {
       let currentWine = {};
 
       for (let i = 0; i < responseSentences.length; i++) {
-        // For each sentence in the response
-        const sentence = responseSentences[i].trim(); // Remove any leading or trailing spaces
+        const sentence = responseSentences[i].trim();
 
         if (sentence.startsWith("Wine Recommendation")) {
           if (currentWine.name) {
@@ -302,13 +286,11 @@ const WineForm = () => {
 
       console.log("Wine Recommendations: ", wineObjects);
       setGeneratedSentence(wineObjects);
-      setLoadingMessage("");
-      return wineObjects;
     } catch (error) {
       console.error("Error:", error);
-      return [];
+      setAlertMessage("An error occurred while fetching the recommendations.");
     } finally {
-      setLoadingMessage("");
+      // setLoadingMessage("");
     }
   };
 
@@ -320,13 +302,14 @@ const WineForm = () => {
     }
 
     const prompt = constructPrompt();
-
     console.log("Prompt: ", prompt);
+    setIsLoading(true);
     setLoadingMessage(
       "Wine Assistant is Thinking (This may take up to 30 seconds)."
     );
-    const recommendations = await fetchWineRecommendations(prompt);
-    setGeneratedSentence(recommendations);
+    await fetchWineRecommendations(prompt);
+    setIsLoading(false);
+    setLoadingMessage("");
   };
 
   const handleChange = (e, newValue) => {
@@ -420,20 +403,6 @@ const WineForm = () => {
             </div>
           </form>
 
-          {/* {showAdvancedOptions && (
-            <div
-              style={{
-                position: "fixed",
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                backgroundColor: "rgba(0, 0, 0, 0.5)",
-                zIndex: 1001,
-              }}
-              className="overlay"
-            ></div>
-          )} */}
           <Snackbar
             open={openSnackbar}
             autoHideDuration={1750}
@@ -480,7 +449,7 @@ const WineForm = () => {
               },
               transition: "transform 0.2s ease-in-out",
               "&:active": {
-                transform: "scale(0.95)", // scales the button down to 95% of its original size
+                transform: "scale(0.95)",
               },
 
               border: 0,
@@ -496,9 +465,6 @@ const WineForm = () => {
           >
             Get Wine Recommendation
           </Button>
-          {/* <button className={styles.recommendationButton} type="button" onClick={onSubmit}>
-            Get Wine Recommendation
-          </button> */}
         </div>
         <p>
           {generateSuggestion(
@@ -513,7 +479,6 @@ const WineForm = () => {
             getSelectedOptions
           )}
         </p>
-        {/* {showAdvancedOptions && ( */}
         <div
           className={`${styles.advancedOptionsContainer} ${
             showAdvancedOptions ? styles.open : ""
@@ -686,92 +651,97 @@ const WineForm = () => {
           onClose={() => setAlertMessage("")}
           message={alertMessage}
         />
-        <p>{loadingMessage}</p>
+
+        <p className={styles.loadingMessage}>{loadingMessage}</p>
         <div className={styles.cardBox}>
-          {generatedSentence.map((wine, index) => (
-            <div className={styles.cardContainer}>
-              <Card
-                key={index}
-                className={styles.suggestionCard}
-                style={{
-                  boxShadow: "0 4px 8px rgba(0, 0, 0, 0.5)",
-                  borderRadius: 17,
-                }}
+          {generatedSentence &&
+            generatedSentence.map((wine, index) => (
+              <div
+                className={styles.cardContainer}
+                style={{ marginTop: !loadingMessage ? "-90px" : "0" }}
               >
-                <CardContent>
-                  <Typography
-                    style={{
-                      fontFamily: "Alegreya",
-                      color: "#333",
-                      fontSize: "1.5em",
-                    }}
-                    variant="h5"
-                  >
-                    <span
+                <Card
+                  key={index}
+                  className={styles.suggestionCard}
+                  style={{
+                    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.5)",
+                    borderRadius: 17,
+                  }}
+                >
+                  <CardContent>
+                    <Typography
                       style={{
+                        fontFamily: "Alegreya",
+                        color: "#333",
+                        fontSize: "1.5em",
+                      }}
+                      variant="h5"
+                    >
+                      <span
+                        style={{
+                          background: "rgba(255, 255, 255, 0.6)",
+                          padding: "4px 10px 10px 10px",
+                          borderRadius: "15px",
+                          boxShadow: "2px 2px 5px rgba(0, 0, 0, 0.2)",
+                          textShadow:
+                            "0px 3px 0px #b2a98f, 0px 14px 10px rgba(0,0,0,0.15), 0px 24px 2px rgba(0,0,0,0.1),  0px 34px 30px rgba(0,0,0,0.1)",
+                        }}
+                      >
+                        {wine.name}
+                      </span>
+                      <hr />
+                    </Typography>
+                    <Typography
+                      style={{
+                        fontFamily: "Alegreya",
+                        color: "#333",
+                        fontSize: ".9em",
                         background: "rgba(255, 255, 255, 0.6)",
-                        padding: "4px 10px 10px 10px",
-                        borderRadius: "15px",
+                        padding: "10px",
+                        // borderRadius: "5px",
                         boxShadow: "2px 2px 5px rgba(0, 0, 0, 0.2)",
-                        textShadow:
-                          "0px 3px 0px #b2a98f, 0px 14px 10px rgba(0,0,0,0.15), 0px 24px 2px rgba(0,0,0,0.1),  0px 34px 30px rgba(0,0,0,0.1)",
+                        borderTopLeftRadius: "25px",
+                        borderTopRightRadius: "25px",
                       }}
                     >
-                      {wine.name}
-                    </span>
-                    <hr />
-                  </Typography>
-                  <Typography
-                    style={{
-                      fontFamily: "Alegreya",
-                      color: "#333",
-                      fontSize: ".9em",
-                      background: "rgba(255, 255, 255, 0.6)",
-                      padding: "10px",
-                      // borderRadius: "5px",
-                      boxShadow: "2px 2px 5px rgba(0, 0, 0, 0.2)",
-                      borderTopLeftRadius: "25px",
-                      borderTopRightRadius: "25px",
-                    }}
-                  >
-                    <span>Price:</span> {wine.price}
-                  </Typography>
-                  <Typography
-                    style={{
-                      fontFamily: "Alegreya",
-                      // fontWeight: 700,
+                      <span>Price:</span> {wine.price}
+                    </Typography>
+                    <Typography
+                      style={{
+                        fontFamily: "Alegreya",
+                        // fontWeight: 700,
 
-                      fontSize: ".7em",
-                      color: "#333",
-                      background: "rgba(255, 255, 255, 0.6)",
-                      padding: "10px",
-                      // border: "1px solid #333",
-                      boxShadow: "2px 2px 5px rgba(0, 0, 0, 0.5)",
-                      textShadow: "2px 2px 5px #aaa",
-                    }}
-                  >
-                    <span>Description:</span> {wine.description}
-                  </Typography>
-                  <Typography
-                    style={{
-                      fontFamily: "Alegreya",
-                      color: "#333",
-                      fontSize: ".7em",
-                      // fontWeight: 700,
-                      background: "rgba(255, 255, 255, 0.6)",
-                      padding: "10px",
-                      // borderRadius: "5px",
-                      boxShadow: "2px 2px 5px rgba(0, 0, 0, 0.2)",
-                      borderBottomLeftRadius: "25px",
-                      borderBottomRightRadius: "25px",
-                    }}
-                  >
-                    <span>Reason:</span> {wine.reason}
-                  </Typography>
-                </CardContent>
-              </Card>
-            </div>
-          ))}
+                        fontSize: ".7em",
+                        color: "#333",
+                        background: "rgba(255, 255, 255, 0.6)",
+                        padding: "10px",
+                        // border: "1px solid #333",
+                        boxShadow: "2px 2px 5px rgba(0, 0, 0, 0.5)",
+                        textShadow: "2px 2px 5px #aaa",
+                      }}
+                    >
+                      <span>Description:</span> {wine.description}
+                    </Typography>
+                    <Typography
+                      style={{
+                        fontFamily: "Alegreya",
+                        color: "#333",
+                        fontSize: ".7em",
+                        // fontWeight: 700,
+                        background: "rgba(255, 255, 255, 0.6)",
+                        padding: "10px",
+                        // borderRadius: "5px",
+                        boxShadow: "2px 2px 5px rgba(0, 0, 0, 0.2)",
+                        borderBottomLeftRadius: "25px",
+                        borderBottomRightRadius: "25px",
+                      }}
+                    >
+                      <span>Reason:</span> {wine.reason}
+                    </Typography>
+                  </CardContent>
+                </Card>
+              </div>
+            ))}
         </div>
       </main>
     </div>

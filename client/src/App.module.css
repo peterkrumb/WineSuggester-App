@@ -110,7 +110,7 @@ body {
 }
 
 .cardBox {
-  margin-top: -90px;
+  /* margin-top: -90px; */
 }
 
 .suggestionCard {
@@ -119,7 +119,6 @@ body {
   background-repeat: no-repeat;
   background-size: cover;
   margin-bottom: 20px;
-  width: 90%;
   max-width: 1000px;
   margin: 10px;
   border: 1px solid #dcdcdc; /* light grey border */
@@ -233,6 +232,11 @@ input[type="number"] {
   background-color: #ffffff;
   color: #000000;
 }
+
+.loadingMessage {
+  margin-top: -45px;
+}
+
 /* 
 .advancedOptionsButton {
   margin: 10px 0 0 0;
