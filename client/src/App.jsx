@@ -658,7 +658,7 @@ const WineForm = () => {
             generatedSentence.map((wine, index) => (
               <div
                 className={styles.cardContainer}
-                style={{ marginTop: !loadingMessage ? "-90px" : "0" }}
+                // style={{ marginTop: loadingMessage ? "-90px" : "0" }}
               >
                 <Card
                   key={index}
